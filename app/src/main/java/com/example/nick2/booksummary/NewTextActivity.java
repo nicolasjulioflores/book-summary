@@ -25,8 +25,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.CameraSource;
@@ -94,24 +98,50 @@ public class NewTextActivity extends AppCompatActivity {
                 EditText TitleBox = findViewById(R.id.title);
 
                 if (TitleBox.getText().toString().equals("")) {
-                    TitleBox.setText("Default Title");
-                    // TODO:
-                    // Show a snackbar or something to let them fill in their title
-                    // They then should be able to proceed with saving
+                    setTitleDialog();
                 }
+                LayoutInflater inflater = LayoutInflater.from(getBaseContext());
+                View LLMenu = inflater.inflate(R.layout.content_main, null);
+                TextView newText = new TextView(getBaseContext());
+                newText.setText(TitleBox.getText().toString());
+                newText.setClickable(true);
+                newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-                // TODO:
-                // Save it and add it as a new view to MainActivity
-                // Once saved, this activity should finish
-
+                finish();
             }
         });
     }
 
+    private void setTitleDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Missing Title");
+        alertDialog.setMessage("Enter a title for your text:");
+
+        final EditText input = new EditText(this);
+        input.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        alertDialog.setView(input);
+
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+                EditText TitleBox = findViewById(R.id.title);
+                String newTitle = input.getText().toString();
+                TitleBox.setText(newTitle);
+
+            }
+        });
+
+        alertDialog.show();
+
+
+    }
+
+
     @Override
     public void onResume() {
         super.onResume();
-        switchSaveButton();
     }
 
 
