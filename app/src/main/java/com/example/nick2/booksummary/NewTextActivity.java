@@ -12,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -37,16 +39,34 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.xml.datatype.Duration;
+
 public class NewTextActivity extends AppCompatActivity {
     private static final String TAG = "NewTextActivity";
     private static final String IMAGE_PATH = "imagePath";
 
+    //API key for the API
+    private static final String APIKEY="3e317094-1306-4472-8c1a-d69f395730d6";
+
+    private final int numSentences=5;
+
+    //The string after it is summarized
+    String summary="";
+    String stringToProcess="Obama was born in 1961 in Honolulu, Hawaii, two years after the territory was admitted to the Union as the 50th state. Raised largely in Hawaii, Obama also spent one year of his childhood in Washington State and four years in Indonesia. After graduating from Columbia University in 1983, he worked as a community organizer in Chicago. In 1988 Obama enrolled in Harvard Law School, where he was the first black president of the Harvard Law Review. After graduation, he became a civil rights attorney and professor, and taught constitutional law at the University of Chicago Law School from 1992 to 2004. Obama represented the 13th District for three terms in the Illinois Senate from 1997 to 2004, when he ran for the U.S. Senate. Obama received national attention in 2004, with his unexpected March primary win, his well-received July Democratic National Convention keynote address, and his landslide November election to the Senate. In 2008, Obama was nominated for president, a year after his campaign began, and after a close primary campaign against Hillary Clinton. He was elected over Republican John McCain, and was inaugurated on January 20, 2009. Nine months later, Obama was named the 2009 Nobel Peace Prize laureate.";
 
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -95,6 +115,9 @@ public class NewTextActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Save Button hit");
 
+                //Remove this later
+                sendResponse(stringToProcess);
+
                 EditText TitleBox = findViewById(R.id.title);
 
                 if (TitleBox.getText().toString().equals("")) {
@@ -111,6 +134,78 @@ public class NewTextActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    public String sendResponse(final String text){
+
+        //Check if internet permission is there
+            //TO DO
+
+        //Check if network is available
+        if (!isNetworkAvailable()) {
+            // write your toast message("Please check your internet connection")
+            Toast.makeText(this,"Error connecting to the internet", Toast.LENGTH_SHORT);
+        }
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+
+                    OkHttpClient client = new OkHttpClient();
+
+                    MediaType mediaType = MediaType.parse("application/octet-stream");
+                    RequestBody body = RequestBody.create(mediaType, text);
+                    Request request = new Request.Builder()
+                            .url("http://api.intellexer.com/summarizeText?apikey="+APIKEY+"&returnedTopicsCount=1&structure=Autodetect&summaryRestriction="+numSentences+"&textStreamLength=1000&usePercentRestriction=false")
+                            .post(body)
+                            .addHeader("cache-control", "no-cache")
+                            .build();
+
+                    Response response = client.newCall(request).execute();
+
+                    //Log.d("REsponse is",response.body().string());
+
+                    summary= handleResponse(response.body().string());
+
+                } catch (Exception e) {
+                    Log.d("Exception in Response", "ERROR" + e.toString());
+                }
+
+            }
+        }).start();
+
+        return summary;
+    }
+
+    public String handleResponse(String res){
+        Log.d("APKTAG","in HandleResponse");
+        try {
+
+            JSONObject jObject = new JSONObject(res);
+            JSONArray jsonArray = (JSONArray)jObject.get("items");
+
+            summary="";
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject j=jsonArray.getJSONObject(i);
+
+                summary += j.get("text").toString();
+                summary +="\n";
+
+            }
+
+            Log.d("APK1",summary);
+
+        } catch(Exception e){
+
+        }
+
+        return summary;
+
+    }
+
 
     private void setTitleDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -429,5 +524,11 @@ public class NewTextActivity extends AppCompatActivity {
         else saveButton.show();
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
 
 }
