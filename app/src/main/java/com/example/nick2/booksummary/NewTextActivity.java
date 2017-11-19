@@ -51,6 +51,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -81,6 +82,13 @@ public class NewTextActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_text);
+
+        if (getResources().getString(R.string.NEW_TEXT_ACTION).equals(getIntent().getAction())) {
+            Log.d(TAG, "NEW Text Activity started");
+        } else {
+            Log.d(TAG, "EDIT Text Activity started");
+            setDefaults();
+        }
 
         FloatingActionButton startCamera = findViewById(R.id.startCamera);
         startCamera.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +127,7 @@ public class NewTextActivity extends AppCompatActivity {
                 String title = TitleBox.getText().toString();
                 if (title.equals("")) {
                     setTitleDialog("Missing Title");
-                } else if (titleInUse(title)) {
+                } else if (titleInUse(title) && getResources().getString(R.string.NEW_TEXT_ACTION).equals(getIntent().getAction())) {
                     setTitleDialog("Title already in use");
                 } else {
                     // Save the data in prefs
@@ -128,6 +136,48 @@ public class NewTextActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    private void setDefaults() {
+        Bundle extras = getIntent().getExtras();
+
+        String title = extras.getString(getResources().getString(R.string.TITLE));
+
+        EditText titleBox = findViewById(R.id.title);
+        titleBox.setText(title);
+
+        String textPath = extras.getString(getResources().getString(R.string.SAVED_STRING));
+
+        String text = readStringFromPath(textPath);
+
+        if (text == null) {
+            Log.e(TAG, "read null string from file");
+            return;
+        } else {
+            Log.d(TAG, "default text: " + text);
+        }
+
+        EditText textBox = findViewById(R.id.capturedString);
+        textBox.setText(text);
+
+    }
+
+    private String readStringFromPath(String path) {
+        File textFile = new File(path);
+        String text;
+        try {
+            byte[] bytes = new byte[(int)textFile.length()];
+            FileInputStream in = new FileInputStream(textFile);
+            in.read(bytes);
+            text = new String(bytes);
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            e.printStackTrace();
+            return null;
+        }
+
+        return text;
     }
 
     public String sendResponse(final String text){
@@ -266,6 +316,7 @@ public class NewTextActivity extends AppCompatActivity {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(textFile, true));
             writer.write(capturedStringBox.getText().toString());
+            writer.flush();
         } catch (IOException e) {
             Log.e(TAG, e.toString());
             e.printStackTrace();
@@ -282,7 +333,9 @@ public class NewTextActivity extends AppCompatActivity {
 
     @Override
     public void onResume() {
+
         super.onResume();
+        switchSaveButton();
     }
 
 
@@ -369,9 +422,9 @@ public class NewTextActivity extends AppCompatActivity {
         }
 
         protected void onProgressUpdate(String... progress) {
-            Toast.makeText(getBaseContext(),
-                    progress[0],
-                    Toast.LENGTH_SHORT ).show();
+            View parentLayout = findViewById(android.R.id.content);
+            Snackbar.make(parentLayout, progress[0], Snackbar.LENGTH_LONG).show();
+
         }
 
         protected void onPostExecute(String capturedString) {

@@ -19,7 +19,9 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.Map;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "in displayTexts()");
         SharedPreferences preferences = getBaseContext().
                 getSharedPreferences(getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
+
         final Map<String, ?> userData = preferences.getAll();
 
 
@@ -64,13 +67,14 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         childLayout.setLayoutParams(linearParams);
         childLayout.setOrientation(LinearLayout.VERTICAL);
-        for (String title: userData.keySet()) {
+        for (final String title: userData.keySet()) {
             Log.d(TAG, "Title for doc: " + title);
 
             // Set the layout for the new CardViews to be added
             CardView newCard = new CardView(this);
 
             newCard.setCardElevation(4);
+            newCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimary));
             int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
             newCard.setContentPadding(padding, padding, padding, padding);
 
@@ -83,33 +87,44 @@ public class MainActivity extends AppCompatActivity {
             params.setMargins(margin, margin, margin, margin);
 
             newCard.setLayoutParams(params);
+            newCard.setClickable(true);
 
             // Now add the title to the card
             TextView newText = new TextView(getBaseContext());
             newText.setText(title);
-            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
-            newText.setTextColor(Color.BLACK);
-            newText.setClickable(true);
+            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
+            newText.setTextColor(Color.WHITE);
             newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
 
-//            newText.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    String savedString = (String) userData.get(title);
+            newCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String savedString = (String) userData.get(title);
+                    Log.d(TAG, "PATH TO STRING:" + savedString);
+
+                    Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
+                    intent.setAction(getResources().getString(R.string.EDIT_TEXT_ACTION));
+                    intent.putExtra(getResources().getString(R.string.TITLE), title);
+                    intent.putExtra(getResources().getString(R.string.SAVED_STRING), savedString);
+                    startActivity(intent);
+                }
+            });
+
+
+
+//            // Add a delete button the card
+//            Button deleteButton = new Button(getBaseContext());
+//            RelativeLayout.LayoutParams rel_btn = new RelativeLayout.LayoutParams(
+//                    RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 //
-//                    Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
-//                    intent.setAction(getResources().getString(R.string.EDIT_TEXT_ACTION));
-//                    intent.putExtra(getResources().getString(R.string.TITLE), title);
-//                    intent.putExtra(getResources().getString(R.string.SAVED_STRING), savedString);
-//                    startActivity(intent);
-//                }
-//            });
+//            rel_btn.leftMargin = 9;
+//            rel_btn.topMargin = 9;
+//            rel_btn.width = 10;
+//            rel_btn.height = 10;
+//            newCard.addView(deleteButton);
 
             newCard.addView(newText);
-
-            // Add a delete button the card
-
 
 
             childLayout.addView(newCard);
