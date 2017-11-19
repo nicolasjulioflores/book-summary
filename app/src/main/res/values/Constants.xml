@@ -4,4 +4,5 @@
     <item name = "EDIT_TEXT_ACTION" type ="string">41</item>
     <item name = "TITLE" type = "string">TITLE GOES HERE</item>
     <item name = "SAVED_STRING" type ="string">SAVED STRING GOES HERE</item>
+    <item name = "API_KEY" type="string">3e317094-1306-4472-8c1a-d69f395730d6</item>
 </resources>

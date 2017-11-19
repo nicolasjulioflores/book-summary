@@ -54,40 +54,42 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "in displayTexts()");
         SharedPreferences preferences = getBaseContext().
                 getSharedPreferences(getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
-
         final Map<String, ?> userData = preferences.getAll();
 
-        // Get the LinearLayout housing the views
-        //CardView myCards = findViewById(R.id.card_view);
 
-        LayoutInflater inflater = LayoutInflater.from(getBaseContext());
-
+        // The layout that will house all the cards
         LinearLayout childLayout = new LinearLayout(MainActivity.this);
         LinearLayout.LayoutParams linearParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         childLayout.setLayoutParams(linearParams);
         childLayout.setOrientation(LinearLayout.VERTICAL);
         for (String title: userData.keySet()) {
             Log.d(TAG, "Title for doc: " + title);
 
-            // Set the layout for the new views to be added
+            // Set the layout for the new CardViews to be added
             CardView newCard = new CardView(this);
-            newCard.setCardElevation(4);
-            newCard.setContentPadding(9,9,9,9);
 
-            //if(newCard.getParent() != null) ((ViewGroup)newCard.getParent()).removeView(newCard); // <- fix
+            newCard.setCardElevation(4);
+            int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+            newCard.setContentPadding(padding, padding, padding, padding);
 
             int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
-            newCard.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    height
+            );
+            int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+            params.setMargins(margin, margin, margin, margin);
 
+            newCard.setLayoutParams(params);
+
+            // Now add the title to the card
             TextView newText = new TextView(getBaseContext());
             newText.setText(title);
             newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
             newText.setTextColor(Color.BLACK);
-            //newText.setBackground(getDrawable(R.drawable.my_rounded_text_border));
-            //newText.setClickable(true);
-            //int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
+            newText.setClickable(true);
             newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
 
@@ -105,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
 //            });
 
             newCard.addView(newText);
+
+            // Add a delete button the card
+
+
 
             childLayout.addView(newCard);
         }

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#329cf2</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="Yellow1">#f8ee2b</color>
     <color name="Turqouise1">#04f6fa</color>
     <color name="SoftBlue1">#329cf2</color>
+    <color name="complementColor">#f28832</color>
+    <color name="lighterAnalogousColor">#32f2e8</color>
+    <color name="darkerAnalogousColor">#323cf2</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 </resources>
