@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class NewTextActivity extends AppCompatActivity {
     private static final String TAG = "NewTextActivity";
@@ -96,25 +98,32 @@ public class NewTextActivity extends AppCompatActivity {
                 Log.d(TAG, "Save Button hit");
 
                 EditText TitleBox = findViewById(R.id.title);
-
-                if (TitleBox.getText().toString().equals("")) {
-                    setTitleDialog();
+                String title = TitleBox.getText().toString();
+                if (title.equals("")) {
+                    setTitleDialog("Missing Title");
+                } else if (titleInUse(title)) {
+                    setTitleDialog("Title already in use");
                 }
-                LayoutInflater inflater = LayoutInflater.from(getBaseContext());
-                View LLMenu = inflater.inflate(R.layout.content_main, null);
-                TextView newText = new TextView(getBaseContext());
-                newText.setText(TitleBox.getText().toString());
-                newText.setClickable(true);
-                newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                EditText capturedStringBox = findViewById(R.id.capturedString);
+
+                // Save the data in prefs
+                SharedPreferences preferences = getBaseContext().getSharedPreferences(
+                        getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
+
+                preferences.edit()
+                        .putString(title, capturedStringBox.getText().toString())
+                        .apply();
 
                 finish();
             }
         });
     }
 
-    private void setTitleDialog() {
+    // Tells the user to set the title if their title is missing or already in use
+    private void setTitleDialog(String reason) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        alertDialog.setTitle("Missing Title");
+        alertDialog.setTitle(reason);
         alertDialog.setMessage("Enter a title for your text:");
 
         final EditText input = new EditText(this);
@@ -136,6 +145,18 @@ public class NewTextActivity extends AppCompatActivity {
         alertDialog.show();
 
 
+    }
+
+    // Checks the preferences tab to see if the title is already in use
+    private boolean titleInUse(String title){
+        SharedPreferences preferences = getBaseContext().getSharedPreferences(
+                getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
+
+        for (String key : preferences.getAll().keySet()) {
+            if (title.equals(key)) return true;
+        }
+
+        return false;
     }
 
 
