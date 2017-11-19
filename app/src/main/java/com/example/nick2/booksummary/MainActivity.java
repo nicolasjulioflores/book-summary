@@ -4,16 +4,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Start the text recognition activity
                 Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
+                intent.setAction(getResources().getString(R.string.NEW_TEXT_ACTION));
                 startActivity(intent);
 
             }
@@ -49,22 +55,61 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = getBaseContext().
                 getSharedPreferences(getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
 
-        Map<String, ?> userData = preferences.getAll();
+        final Map<String, ?> userData = preferences.getAll();
 
+        // Get the LinearLayout housing the views
+        //CardView myCards = findViewById(R.id.card_view);
+
+        LayoutInflater inflater = LayoutInflater.from(getBaseContext());
+
+        LinearLayout childLayout = new LinearLayout(MainActivity.this);
+        LinearLayout.LayoutParams linearParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        childLayout.setLayoutParams(linearParams);
+        childLayout.setOrientation(LinearLayout.VERTICAL);
         for (String title: userData.keySet()) {
-            LinearLayout LLMenu = findViewById(R.id.LinearLayoutMain);
+            Log.d(TAG, "Title for doc: " + title);
+
+            // Set the layout for the new views to be added
+            CardView newCard = new CardView(this);
+            newCard.setCardElevation(4);
+            newCard.setContentPadding(9,9,9,9);
+
+            //if(newCard.getParent() != null) ((ViewGroup)newCard.getParent()).removeView(newCard); // <- fix
+
+            int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+            newCard.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height));
 
             TextView newText = new TextView(getBaseContext());
             newText.setText(title);
             newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
             newText.setTextColor(Color.BLACK);
-            newText.setBackground(getDrawable(R.drawable.my_rounded_text_border));
-            Log.d(TAG, "Title for doc: " + title);
-            newText.setClickable(true);
-            newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            //newText.setBackground(getDrawable(R.drawable.my_rounded_text_border));
+            //newText.setClickable(true);
+            //int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, getResources().getDisplayMetrics());
+            newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-            LLMenu.addView(newText);
+
+//            newText.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    String savedString = (String) userData.get(title);
+//
+//                    Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
+//                    intent.setAction(getResources().getString(R.string.EDIT_TEXT_ACTION));
+//                    intent.putExtra(getResources().getString(R.string.TITLE), title);
+//                    intent.putExtra(getResources().getString(R.string.SAVED_STRING), savedString);
+//                    startActivity(intent);
+//                }
+//            });
+
+            newCard.addView(newText);
+
+            childLayout.addView(newCard);
         }
+        LinearLayout LLMenu = findViewById(R.id.LinearLayoutMain);
+        LLMenu.addView(childLayout);
     }
 
     @Override

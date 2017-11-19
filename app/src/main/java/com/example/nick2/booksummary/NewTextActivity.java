@@ -47,8 +47,6 @@ import java.util.Map;
 
 public class NewTextActivity extends AppCompatActivity {
     private static final String TAG = "NewTextActivity";
-    private static final String IMAGE_PATH = "imagePath";
-
 
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -69,9 +67,6 @@ public class NewTextActivity extends AppCompatActivity {
                 // Check if a camera is there
                 if (!checkCameraHardware(getBaseContext())) return;
 
-                // Set good defaults for capturing text.
-                boolean autoFocus = true;
-                boolean useFlash = false;
 
                 // Request Camera Permissions
                 // Check for the camera permission before accessing the camera.  If the
@@ -103,19 +98,11 @@ public class NewTextActivity extends AppCompatActivity {
                     setTitleDialog("Missing Title");
                 } else if (titleInUse(title)) {
                     setTitleDialog("Title already in use");
+                } else {
+                    // Save the data in prefs
+                    saveDataAndQuit(title);
                 }
 
-                EditText capturedStringBox = findViewById(R.id.capturedString);
-
-                // Save the data in prefs
-                SharedPreferences preferences = getBaseContext().getSharedPreferences(
-                        getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
-
-                preferences.edit()
-                        .putString(title, capturedStringBox.getText().toString())
-                        .apply();
-
-                finish();
             }
         });
     }
@@ -128,7 +115,7 @@ public class NewTextActivity extends AppCompatActivity {
 
         final EditText input = new EditText(this);
         input.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT));
         alertDialog.setView(input);
 
@@ -137,7 +124,13 @@ public class NewTextActivity extends AppCompatActivity {
 
                 EditText TitleBox = findViewById(R.id.title);
                 String newTitle = input.getText().toString();
-                TitleBox.setText(newTitle);
+
+                //TODO: If title in use -> show a toast
+                if (titleInUse(newTitle)) {
+
+                }
+
+                saveDataAndQuit(newTitle);
 
             }
         });
@@ -157,6 +150,19 @@ public class NewTextActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    private void saveDataAndQuit(String title) {
+        SharedPreferences preferences = getBaseContext().getSharedPreferences(
+                getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
+
+
+        EditText capturedStringBox = findViewById(R.id.capturedString);
+        preferences.edit()
+                .putString(title, capturedStringBox.getText().toString())
+                .apply();
+
+        finish();
     }
 
 
@@ -268,6 +274,7 @@ public class NewTextActivity extends AppCompatActivity {
             String baseString = capturedStringBox.getText().toString();
             baseString += capturedString;
             capturedStringBox.setText(baseString);
+            capturedStringBox.setBackground(getDrawable(R.drawable.my_rounded_text_border));
             switchSaveButton();
 
         }

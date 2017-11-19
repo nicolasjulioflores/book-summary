@@ -10,13 +10,6 @@
     tools:context="com.example.nick2.booksummary.MainActivity"
     tools:showIn="@layout/activity_main"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
-    <TextView
-        android:id="@+id/newText"
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:layout_weight="1"
-        android:textSize="18sp"
-        android:visibility="invisible" />
 
 
 </LinearLayout>
