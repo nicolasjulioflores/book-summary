@@ -60,16 +60,18 @@ public class MainActivity extends AppCompatActivity
 
         screen = getResources().getString(R.string.HOME);
 
+        //key to read data from file
         key=getString(R.string.string_data_preference_key);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addNewText);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Clear tutorial background
-                //Set background image
-                ScrollView svv= findViewById(R.id.svv);
-                svv.setBackgroundColor(Color.WHITE);
+//                //Clear tutorial background
+//
+//                //Set background image
+//                ScrollView svv= findViewById(R.id.svv);
+//                svv.setBackgroundColor(Color.WHITE);
 
                 // Start the text recognition activity
                 Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
@@ -90,21 +92,12 @@ public class MainActivity extends AppCompatActivity
         //Set background image
         ScrollView svv= findViewById(R.id.svv);
 
+        //Set background image if first time opening
         if (firstopen) {
             firstopen=false;
             svv.setBackground(getDrawable(R.drawable.homebackground));
         }
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override
@@ -229,6 +222,18 @@ public class MainActivity extends AppCompatActivity
         about.setText((CharSequence) text);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+
     private void displayHome() {
         //Set background image
         Log.d(TAG, "displayHome");
@@ -317,7 +322,6 @@ public class MainActivity extends AppCompatActivity
 
             childLayout.addView(newCard);
         }
-//        LinearLayout LLMenu = findViewById(R.id.LinearLayoutMain);
         LinearLayout LLMenu = findViewById(R.id.lly);
         LLMenu.removeAllViews();
 
@@ -403,7 +407,6 @@ public class MainActivity extends AppCompatActivity
 
             childLayout.addView(newCard);
         }
-//        LinearLayout LLMenu = findViewById(R.id.LinearLayoutMain);
         LinearLayout LLMenu = findViewById(R.id.lly);
 
         LLMenu.removeAllViews();
