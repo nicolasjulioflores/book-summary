@@ -19,10 +19,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,9 @@ public class NavigatingActivity extends AppCompatActivity
     private List<CardView> Deck;
     private NavigationView navigationView;
 
+    //Key to select either texts or summaries
+    private String key;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +46,8 @@ public class NavigatingActivity extends AppCompatActivity
         setContentView(R.layout.activity_navigating);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        key=getString(R.string.string_data_preference_key);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addNewText);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +99,20 @@ public class NavigatingActivity extends AppCompatActivity
             return true;
         }
 
+        if (id == R.id.action_delete ) {
+            if (mDeleteSnackbar == null || !mDeleteSnackbar.isShown()) {
+
+                View parentLayout = findViewById(R.id.lly);
+                mDeleteSnackbar = Snackbar.make(parentLayout, R.string.delete_snackbar,
+                        Snackbar.LENGTH_INDEFINITE);
+                mDeleteSnackbar.show();
+            } else if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) {
+                deleteSelectedViews(key);
+                mDeleteSnackbar.dismiss();
+            }
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -117,9 +139,10 @@ public class NavigatingActivity extends AppCompatActivity
 
         if (id == R.id.nav_summary) {
             displaySummaries();
+            key=getString(R.string.summary_key);
         } else if (id == R.id.nav_texts) {
             displayTexts();
-
+            key=getString(R.string.string_data_preference_key);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -178,7 +201,7 @@ public class NavigatingActivity extends AppCompatActivity
                 public void onClick(View v) {
 
                     if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) {
-                        //handleDeleteClick(v);
+                        handleDeleteClick(v);
                     } else {
                         String savedString = (String) userData.get(title);
 
@@ -256,7 +279,7 @@ public class NavigatingActivity extends AppCompatActivity
                 public void onClick(View v) {
 
                     if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) {
-                        //handleDeleteClick(v);
+                        handleDeleteClick(v);
                     } else {
                         String savedString = (String) userData.get(title);
 
@@ -291,6 +314,60 @@ public class NavigatingActivity extends AppCompatActivity
         Deck.add(card);
 
         //card.setId(getResources().getInteger(R.integer.RANDOM_BASE) + Deck.indexOf(card));
+    }
+
+    private void handleDeleteClick(View v) {
+
+        CardView clickedCard = (CardView)v;
+
+        if (clickedCard.getTag() == null || getResources().getString(R.string.NOT_CLICKED).equals(clickedCard.getTag())) {
+            clickedCard.setTag(getResources().getString(R.string.CLICKED));
+            clickedCard.setBackgroundColor(getResources().getColor(R.color.complementColor));
+        } else {
+            clickedCard.setTag(getResources().getString(R.string.NOT_CLICKED));
+            clickedCard.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        }
+
+    }
+
+    private void deleteSelectedViews(String key) {
+        for (Iterator<CardView> iterator = Deck.iterator(); iterator.hasNext();) {
+            CardView card = iterator.next();
+            if (card.getTag() != null && getResources().getString(R.string.CLICKED).equals(card.getTag())) {
+                TextView titleBox = (TextView) card.getChildAt(0);
+
+                Log.d("DeleteViews", "Title for view:" + titleBox.getText().toString());
+
+                SharedPreferences preferences = getBaseContext().
+                        getSharedPreferences(key, Context.MODE_PRIVATE);
+
+                String title = titleBox.getText().toString();
+                String path = preferences.getString(title, null);
+
+                Log.d("Deleteviews", "Path to textfile: " + path);
+
+                File textFile = new File(path);
+
+                // Delete the textFile
+                textFile.delete();
+
+                // Clear info from prefs
+                preferences.edit().remove(title).apply();
+
+                // Delete the textView
+                card.removeView(titleBox);
+
+                // Delete the cardView
+                ((ViewManager)card.getParent()).removeView(card);
+
+                // Delete the cardView in the deck
+                iterator.remove();
+
+
+            }
+
+        }
+
     }
 
 

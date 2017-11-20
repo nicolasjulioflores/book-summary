@@ -8,6 +8,10 @@
     tools:context="com.example.nick2.booksummary.NavigatingActivity"
     tools:showIn="@layout/app_bar_navigating">
 
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/lly"
         android:layout_width="368dp"
@@ -15,4 +19,6 @@
         android:orientation="vertical"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp"></LinearLayout>
+
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>
