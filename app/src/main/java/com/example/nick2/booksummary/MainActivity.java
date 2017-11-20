@@ -19,16 +19,23 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
+    private Snackbar mDeleteSnackbar;
+    private List<CardView> Deck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,37 +110,93 @@ public class MainActivity extends AppCompatActivity {
             newCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String savedString = (String) userData.get(title);
-                    Log.d(TAG, "PATH TO STRING:" + savedString);
 
-                    Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
-                    intent.setAction(getResources().getString(R.string.EDIT_TEXT_ACTION));
-                    intent.putExtra(getResources().getString(R.string.TITLE), title);
-                    intent.putExtra(getResources().getString(R.string.SAVED_STRING), savedString);
-                    startActivity(intent);
+                    if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) {
+                        handleDeleteClick(v);
+                    } else {
+                        String savedString = (String) userData.get(title);
+
+                        Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
+                        intent.setAction(getResources().getString(R.string.EDIT_TEXT_ACTION));
+                        intent.putExtra(getResources().getString(R.string.TITLE), title);
+                        intent.putExtra(getResources().getString(R.string.SAVED_STRING), savedString);
+                        startActivity(intent);
+                    }
                 }
             });
 
 
-
-//            // Add a delete button the card
-//            Button deleteButton = new Button(getBaseContext());
-//            RelativeLayout.LayoutParams rel_btn = new RelativeLayout.LayoutParams(
-//                    RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-//
-//            rel_btn.leftMargin = 9;
-//            rel_btn.topMargin = 9;
-//            rel_btn.width = 10;
-//            rel_btn.height = 10;
-//            newCard.addView(deleteButton);
-
             newCard.addView(newText);
 
+            addToDeck(newCard);
 
             childLayout.addView(newCard);
         }
         LinearLayout LLMenu = findViewById(R.id.LinearLayoutMain);
         LLMenu.addView(childLayout);
+    }
+
+    private void addToDeck(CardView card) {
+        if (Deck == null) {
+            Deck = new ArrayList<CardView>();
+        }
+        Deck.add(card);
+
+        //card.setId(getResources().getInteger(R.integer.RANDOM_BASE) + Deck.indexOf(card));
+    }
+
+    private void handleDeleteClick(View v) {
+
+        CardView clickedCard = (CardView)v;
+
+        if (clickedCard.getTag() == null || getResources().getString(R.string.NOT_CLICKED).equals(clickedCard.getTag())) {
+            clickedCard.setTag(getResources().getString(R.string.CLICKED));
+            clickedCard.setBackgroundColor(getResources().getColor(R.color.complementColor));
+        } else {
+            clickedCard.setTag(getResources().getString(R.string.NOT_CLICKED));
+            clickedCard.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        }
+
+    }
+
+    private void deleteSelectedViews() {
+        for (Iterator<CardView> iterator = Deck.iterator(); iterator.hasNext();) {
+            CardView card = iterator.next();
+            if (card.getTag() != null && getResources().getString(R.string.CLICKED).equals(card.getTag())) {
+                TextView titleBox = (TextView) card.getChildAt(0);
+
+                Log.d(TAG, "Title for view:" + titleBox.getText().toString());
+
+                SharedPreferences preferences = getBaseContext().
+                        getSharedPreferences(getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
+
+                String title = titleBox.getText().toString();
+                String path = preferences.getString(title, null);
+
+                Log.d(TAG, "Path to textfile: " + path);
+
+                File textFile = new File(path);
+
+                // Delete the textFile
+                textFile.delete();
+
+                // Clear info from prefs
+                preferences.edit().remove(title).apply();
+
+                // Delete the textView
+                card.removeView(titleBox);
+
+                // Delete the cardView
+                ((ViewManager)card.getParent()).removeView(card);
+
+                // Delete the cardView in the deck
+                iterator.remove();
+
+
+            }
+
+        }
+
     }
 
     @Override
@@ -158,10 +221,18 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == R.id.action_delete) {
-            Log.d(TAG, "Delete clicked");
+
+        if (id == R.id.action_delete ) {
+            if (mDeleteSnackbar == null || !mDeleteSnackbar.isShown()) {
+                Log.d(TAG, "Delete clicked");
+                View parentLayout = findViewById(android.R.id.content);
+                mDeleteSnackbar = Snackbar.make(parentLayout, R.string.delete_snackbar,
+                        Snackbar.LENGTH_INDEFINITE);
+                mDeleteSnackbar.show();
+            } else if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) {
+                deleteSelectedViews();
+                mDeleteSnackbar.dismiss();
+            }
             return true;
         }
 
