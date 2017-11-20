@@ -41,8 +41,6 @@ public class DispSummaryFragment extends DialogFragment {
     //Flag if summary is generated or not
     private Boolean summaryGenerated=false;
 
-    String summary;
-
     private static String title="Title";
     private static String content;
 
@@ -95,7 +93,7 @@ public class DispSummaryFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
 
-                    saveSummary(title,summary);
+                    saveSummary(title,content);
 
                 }
             });

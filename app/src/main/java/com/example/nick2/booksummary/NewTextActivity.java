@@ -55,7 +55,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
-//import com.soundcloud.android.crop.Crop;
+import com.soundcloud.android.crop.Crop;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -89,9 +89,6 @@ public class NewTextActivity extends AppCompatActivity {
     //API key for the API
     private static final String APIKEY="3e317094-1306-4472-8c1a-d69f395730d6";
 
-    //Default number of sentences in the summary
-    private static int numSentences=5;
-
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
     private static final int REQUEST_IMAGE_CAPTURE = 25;
@@ -100,7 +97,6 @@ public class NewTextActivity extends AppCompatActivity {
     private String mCurrentCroppedImagePath;
 
     private String summary;
-    private String title;
 
     private Snackbar summarySnackBar;
 
@@ -155,7 +151,6 @@ public class NewTextActivity extends AppCompatActivity {
 
         EditText titleBox = findViewById(R.id.title);
         titleBox.setText(title);
-        this.title=title;
 
         String textPath = extras.getString(getResources().getString(R.string.SAVED_STRING));
 
@@ -174,8 +169,8 @@ public class NewTextActivity extends AppCompatActivity {
     }
 
 
-    // Create a dialog box that asks the humber of sentences to use in summary
-    private void startDialog(final String title, final String content) {
+    // Create a dialog box that asks the number of sentences to use in summary
+    private void askNumberSentences(final String title,final String content) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Enter Number of Sentences to use in Summary");
         final EditText input = new EditText(this);
@@ -193,7 +188,7 @@ public class NewTextActivity extends AppCompatActivity {
                     //Set default value to 5
                     numSentences = 5;
                 }
-                sendResponse(content, numSentences);
+                sendResponse(title,content, numSentences);
 
             }
         });
@@ -213,7 +208,7 @@ public class NewTextActivity extends AppCompatActivity {
 
 
 
-    public String sendResponse(final String text,final int numSentences){
+    public String sendResponse(final String title,final String text,final int numSentences){
 
         //Check if internet permission is there
         //TODO: Create Floating Action Button For Summarize
@@ -243,7 +238,7 @@ public class NewTextActivity extends AppCompatActivity {
 
                     Response response = client.newCall(request).execute();
 
-                    summary= handleResponse(response.body().string());
+                    summary= handleResponse(title,response.body().string());
 
                 } catch (Exception e) {
                     Log.d("Exception in Response", "ERROR" + e.toString());
@@ -259,7 +254,7 @@ public class NewTextActivity extends AppCompatActivity {
         return summary;
     }
 
-    public String handleResponse(String res){
+    public String handleResponse(final String title,String res){
 
         //hide snackbar
         if(summarySnackBar !=null){
@@ -295,10 +290,8 @@ public class NewTextActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                Log.d("ApkTAG",summary);
+            //Create a dialog with the summary
                 summaryDialog(title,summary);
-
             }
         });
 
@@ -309,10 +302,9 @@ public class NewTextActivity extends AppCompatActivity {
 
 
     //Using title and summarized content, Shows the summary to the user
-    void summaryDialog(final String title, final String content) {
+    void summaryDialog(final String title, final String summarizedText) {
 
-        this.title=title;
-
+        this.summary=summarizedText;
 
         runOnUiThread(new Runnable() {
             @Override
@@ -331,11 +323,8 @@ public class NewTextActivity extends AppCompatActivity {
                 }
                 ft.addToBackStack(null);
 
-
-                Log.d("ApkTAG!!!!!!",summary);
-
                 // Create and show the dialog.
-                DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,summary);
+                DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,summarizedText);
                 newFragment.show(ft, "dialog");
 
             }
@@ -374,33 +363,37 @@ public class NewTextActivity extends AppCompatActivity {
                 EditText TitleBox = findViewById(R.id.title);
                 String newTitle = input.getText().toString();
 
+
                 while (true) {
                     boolean titleUsed = titleInUse(newTitle);
                     if (!titleUsed && !newTitle.equals("")) break;
 
-                //TODO: If title in use -> show a toast
-                if (titleInUse(newTitle)) {
 
-                    View parentLayout = findViewById(android.R.id.content);
-                    if (titleUsed) {
-                        dialog.dismiss();
-                        setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
-                    } else {
-                        dialog.dismiss();
-                        setTitleDialog(getResources().getString(R.string.NO_TITLE));
+                    // This is definitely not working
+                    //TODO: If title in use -> show a toast
+                    if (titleInUse(newTitle)) {
+
+                        View parentLayout = findViewById(android.R.id.content);
+                        if (titleUsed) {
+                            dialog.dismiss();
+                            //setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
+                        } else {
+                            dialog.dismiss();
+                            //setTitleDialog(getResources().getString(R.string.NO_TITLE));
+                        }
                     }
-                }
-                if (newTitle.equals("")){
+                    if (newTitle.equals("")) {
+
+                    }
+
+                    TitleBox.setText(newTitle);
+
+                    if (b) {
+                        saveDataAndQuit(newTitle);
+                    }
+
 
                 }
-
-                TitleBox.setText(newTitle);
-
-                if (b){
-                    saveDataAndQuit(newTitle);
-                }
-
-
             }
         });
 
@@ -816,6 +809,67 @@ public class NewTextActivity extends AppCompatActivity {
     }
 
 
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+//        // dialog, so make our own transaction and take care of that here.
+//        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+//        if (prev != null) {
+//            ft.remove(prev);
+//        }
+//        ft.addToBackStack(null);
+//
+//
+//        // Create and show the dialog.
+//        DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,content,numSentences);
+//        newFragment.show(ft, "dialog");
+//    }
+
+//    // Create a dialog box that disappears when the user correctly types in their password
+//    private void startDialog(final String title, final String content) {
+//        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//        alert.setTitle("Enter Number of Sentences to use in Summary");
+//        final EditText input = new EditText(this);
+//
+//        // set the style for the dialog box
+//        ColorStateList colorStateList = ColorStateList.valueOf(getResources().getColor(R.color.complementColor));
+//        ViewCompat.setBackgroundTintList(input, colorStateList);
+//        try {
+//            Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+//            f.setAccessible(true);
+//            f.set(input, R.drawable.colored_cursor);
+//        } catch (Exception e) {
+//            Log.e(TAG, "Couldn't set cursor to diff color");
+//            e.printStackTrace();
+//        }
+//
+//        // Set the input type
+//        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+//        input.setRawInputType(Configuration.KEYBOARD_12KEY);
+//        alert.setView(input);
+//        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int whichButton) {
+//                //Put actions for OK button here
+//                String numSentencesString=input.getText().toString();
+//                int numSentences;
+//                try {
+//                    numSentences = Integer.parseInt(numSentencesString);
+//                } catch (Exception e){
+//                    //Set default value to 5
+//                    numSentences = 5;
+//                }
+//                summaryDialog(title,content,numSentences);
+//            }
+//        });
+//        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int whichButton) {
+//                //Put actions for CANCEL button here, or leave in blank
+//            }
+//        });
+//        alert.show();
+//
+//
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -838,11 +892,17 @@ public class NewTextActivity extends AppCompatActivity {
 
             TitleBox = findViewById(R.id.title);
             String title = TitleBox.getText().toString();
+            String action = getIntent().getAction();
+            Bundle extras = getIntent().getExtras();
+            boolean editingText = (getResources().getString(R.string.EDIT_TEXT_ACTION).equals(action) &&
+                    title.equals(extras.getString(getResources().getString(R.string.TITLE))));
+
             if (title.equals("")) {
                 setTitleDialog("Missing Title",true);
                 setTitleDialog(getResources().getString(R.string.NO_TITLE));
             } else if (titleInUse(title)) {
                 setTitleDialog("Title already in use",true);
+            } else if (titleInUse(title) && !editingText) {
                 setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
             } else {
                 // Save the data in prefs
@@ -872,8 +932,8 @@ public class NewTextActivity extends AppCompatActivity {
                 } else {
                     //Opens a Dialog window which asks the number of sentences to use in summary
                     //The Dialog window automatically calls summaryDialog(title,capturedString);
-                    startDialog(title, capturedString);
-                    //summaryDialog(title,capturedString);
+                    askNumberSentences(title,capturedString);
+
                 }
             }
 
@@ -883,15 +943,6 @@ public class NewTextActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        File imageFile = new File(mCurrentImagePath);
-        File cropImageFile = new File(mCurrentCroppedImagePath);
-        if (imageFile.exists()) imageFile.delete();
-        if (cropImageFile.exists()) cropImageFile.delete();
-
-    }
 
 
     private String readStringFromPath(String path) {
