@@ -151,6 +151,8 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) endDeleteAction();
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -417,9 +419,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void addToDeck(CardView card) {
-        if (Deck == null) {
-            Deck = new ArrayList<CardView>();
-        }
+        if (Deck == null) Deck = new ArrayList<CardView>();
+
+        if (Deck.contains(card)) return;
+
         Deck.add(card);
 
         //card.setId(getResources().getInteger(R.integer.RANDOM_BASE) + Deck.indexOf(card));
@@ -479,6 +482,16 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+    private void endDeleteAction() {
+        mDeleteSnackbar.dismiss();
+
+        if (Deck == null) return;
+        for (CardView card : Deck) {
+            if (getResources().getString(R.string.CLICKED).equals(card.getTag())) handleDeleteClick(card);
+        }
+    }
+
 
     private void setSnackbarStyle(Snackbar snackbar) {
         View deleteSnackbarView = snackbar.getView();
