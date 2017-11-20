@@ -22,17 +22,24 @@
         android:layout_marginTop="10dp"
         >
 
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/svt"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/text"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_marginTop="40dp"
-            android:layout_marginBottom="60dp"
+
             android:padding="16dp"
             android:scrollbars="vertical"
             android:text="@string/hello_blank_fragment"
              />
+
+        </ScrollView>
 
         <Button
             android:id="@+id/saveButton"
@@ -45,7 +52,7 @@
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text" />
+            app:layout_constraintTop_toBottomOf="@+id/svt" />
 
         <TextView
             android:id="@+id/titleView"
@@ -60,7 +67,7 @@
             android:padding="16dp"
             android:textAppearance="@android:style/TextAppearance.Material.Headline"
             android:visibility="invisible"
-            app:layout_constraintBottom_toTopOf="@+id/text"
+            app:layout_constraintBottom_toTopOf="@+id/svt"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

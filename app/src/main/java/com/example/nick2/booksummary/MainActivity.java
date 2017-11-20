@@ -33,9 +33,13 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String TAG = "MainActivity";
     private Snackbar mDeleteSnackbar;
     private List<CardView> Deck;
     private NavigationView navigationView;
+
+
+    private String screen;
 
     //Key to select either texts or summaries
     private String key;
@@ -49,6 +53,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_navigating);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        screen = getResources().getString(R.string.HOME);
 
         key=getString(R.string.string_data_preference_key);
 
@@ -81,7 +87,6 @@ public class MainActivity extends AppCompatActivity
         ScrollView svv= findViewById(R.id.svv);
 
         if (firstopen) {
-
             firstopen=false;
             svv.setBackground(getDrawable(R.drawable.homebackground));
         }
@@ -151,19 +156,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_summary) {
-            //Set background image
-            ScrollView svv= findViewById(R.id.svv);
-            svv.setBackgroundColor(Color.WHITE);
-            setTitle("Saved Summaries");
 
+            screen = getResources().getString(R.string.SUMMARIES);
             displaySummaries();
             key=getString(R.string.summary_key);
         } else if (id == R.id.nav_texts) {
-            //Set background image
-            ScrollView svv= findViewById(R.id.svv);
-            svv.setBackgroundColor(Color.WHITE);
-            setTitle("Saved Texts");
 
+            screen = getResources().getString(R.string.TEXTS);
             displayTexts();
             key=getString(R.string.string_data_preference_key);
         } else if (id == R.id.nav_about) {
@@ -176,7 +175,9 @@ public class MainActivity extends AppCompatActivity
             LinearLayout LLMenu = findViewById(R.id.lly);
             LLMenu.removeAllViews();
 
-
+            TextView about=new TextView(getBaseContext());
+            about.setText(R.string.ABOUT);
+            LLMenu.addView(about);
 
         }
 
@@ -185,9 +186,25 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void displayHome() {
+        //Set background image
+        Log.d(TAG, "displayHome");
+        ScrollView svv= findViewById(R.id.svv);
+        svv.setBackgroundColor(Color.WHITE);
+        setTitle("BookSummary");
+        screen = getResources().getString(R.string.HOME);
+        }
+
+
     //Gathers stored summaries from the file and displays it in the window
     private void displaySummaries() {
-        Log.d("APKTAG", "in displaySummaries()");
+
+        //Set background image
+        ScrollView svv= findViewById(R.id.svv);
+        svv.setBackgroundColor(Color.WHITE);
+        setTitle("Saved Summaries");
+
+        Log.d(TAG, "in displaySummaries()");
         SharedPreferences preferences = getBaseContext().
                 getSharedPreferences(getString(R.string.summary_key), Context.MODE_PRIVATE);
 
@@ -226,7 +243,8 @@ public class MainActivity extends AppCompatActivity
             // Now add the title to the card
             TextView newText = new TextView(getBaseContext());
             newText.setText(title);
-            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
+            float textSize = (float) getResources().getInteger(R.integer.PRIMARY_TEXT_SIZE);
+            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             newText.setTextColor(Color.WHITE);
             newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
@@ -266,6 +284,12 @@ public class MainActivity extends AppCompatActivity
     //Gathers stored texts from the file and displays it in the window
     private void displayTexts() {
         Log.d("APKTAG", "in displayTexts()");
+
+        //Set background image
+        ScrollView svv= findViewById(R.id.svv);
+        svv.setBackgroundColor(Color.WHITE);
+        setTitle("Saved Texts");
+
         SharedPreferences preferences = getBaseContext().
                 getSharedPreferences(getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
 
@@ -280,7 +304,7 @@ public class MainActivity extends AppCompatActivity
         childLayout.setLayoutParams(linearParams);
         childLayout.setOrientation(LinearLayout.VERTICAL);
         for (final String title: userData.keySet()) {
-            Log.d("APKTAG", "Title for doc: " + title);
+            Log.d(TAG, "Title for doc: " + title);
 
             // Set the layout for the new CardViews to be added
             CardView newCard = new CardView(this);
@@ -304,7 +328,9 @@ public class MainActivity extends AppCompatActivity
             // Now add the title to the card
             TextView newText = new TextView(getBaseContext());
             newText.setText(title);
-            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
+            float textSize = (float) getResources().getInteger(R.integer.PRIMARY_TEXT_SIZE);
+
+            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             newText.setTextColor(Color.WHITE);
             newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
@@ -366,11 +392,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void deleteSelectedViews(String key) {
-
-        if (Deck==null){
-            return;
-        }
-
         if (Deck == null) return;
         for (Iterator<CardView> iterator = Deck.iterator(); iterator.hasNext();) {
             CardView card = iterator.next();
@@ -406,6 +427,32 @@ public class MainActivity extends AppCompatActivity
 
 
             }
+
+        }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(getResources().getString(R.string.SCREEN_STATE), screen);
+        // Need to save what we were displaying
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        screen = savedInstanceState.getString(getResources().getString(R.string.SCREEN_STATE));
+
+        // Need to show what we were displaying
+        if (getResources().getString(R.string.TEXTS).equals(screen)) {
+            displayTexts();
+
+        } else if (getResources().getString(R.string.SUMMARIES).equals(screen)) {
+            displaySummaries();
+
+        } else {
+            displayHome();
 
         }
 

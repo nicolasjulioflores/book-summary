@@ -925,7 +925,6 @@ public class NewTextActivity extends AppCompatActivity {
                 if (capturedString.equals("")){
                     View parentLayout = findViewById(android.R.id.content);
                     Snackbar noStringSnack = Snackbar.make(parentLayout, "No string to summarize", Snackbar.LENGTH_SHORT);
-
                     noStringSnack.show();
 
                     Log.d("TAG","No string to summarize");

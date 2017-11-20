@@ -4,14 +4,13 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
-
         <item
             android:id="@+id/nav_texts"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@mipmap/ic_folder_white_24dp"
             android:title="Text Library" />
         <item
             android:id="@+id/nav_summary"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@mipmap/ic_folder_white_24dp"
             android:title="Summary Library" />
         <item
             android:id="@+id/nav_about"
