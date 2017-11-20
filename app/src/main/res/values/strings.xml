@@ -35,31 +35,4 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
-    <string name="ABOUT">### Nicolas Flores and Ananta Prabin Karkin
-
-email: nicolas.j.flores.19@dartmouth.edu
-email: ananta.karki.ug@dartmouth.edu
-
-# Book Summary App
-
-Often times nowadays, students are overcommitted and lack the time to thoroughly read all the documents they are assigned. To aid with this, we are intending to develop an app that will allow students to take pictures of their readings and return a summary of it, after submitting it to an online summary API.
-
-### Why is this idea worth it?
-
-This project interests me and my partner because it is so relevant to us as students. It is the kind of app that we would want to continue to use even after we submit it. The major technical challenges seem to be leveraging the text recognition API to decode from the image, the words on the paper.
-
-
-### App Design
-
-When opening the app, the user will be presented with a screen of his/her 'texts'. These are the strings pulled from their images that are going to be summarized. On this screen, their will be a '+' button, to allow them to add a new 'text'. This will open a camera that allows them to take a picture of their page that they wish to summarize. Once, captured, they will be prompted to name their new 'text'. When clicking upon their text, they will be able to edit their 'text'. This will allow them to make small changes to their 'text' if the text recognition made a mistake. Finally, once a 'text' has been captured and possibly edited, the user will have the option to 'summarize' (button design TBD). Once clicked, the user will be prompted to provide how many sentences they would like their summary to be. The request will then be posted, and the summary will be returned. At the moment, the current plan is to provide a 'summaries' tab that will contain the user's text summaries. The summaries may alternatively be attached in some way to their actual 'text'.
-
-### APIs to be used
-
-Text Recognition API:
-https://developers.google.com/vision/text-overview
-
-Text Summary API:
-https://market.mashape.com/textanalysis/text-summarization</string>
-
-
 </resources>

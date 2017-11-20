@@ -1,0 +1,21 @@
+### Nicolas Flores and Ananta Prabin Karkin
+
+email: nicolas.j.flores.19@dartmouth.edu
+email: ananta.karki.ug@dartmouth.edu
+
+# Book Summary App
+
+Often times nowadays, students are overcommitted and lack the time to thoroughly read all the documents they are assigned. To aid with this, we are intending to develop an app that will allow students to take pictures of their readings and return a summary of it, after submitting it to an online summary API.
+
+### Why is this idea worth it?
+
+This project interests me and my partner because it is so relevant to us as students. It is the kind of app that we would want to continue to use even after we submit it. The major technical challenges seem to be leveraging the text recognition API to decode from the image, the words on the paper.
+
+
+### APIs used
+
+Text Recognition API:
+https://developers.google.com/vision/text-overview
+
+Text Summary API:
+https://www.intellexer.com/summarizer.html
