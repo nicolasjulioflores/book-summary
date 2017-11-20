@@ -18,6 +18,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -174,7 +175,13 @@ public class NewTextActivity extends AppCompatActivity {
         return text;
     }
 
+    private void setSnackbarStyle(Snackbar snackbar) {
+        View SnackbarView = snackbar.getView();
+        SnackbarView.setBackgroundColor(getResources().getColor(R.color.lighterAnalogousColor));
 
+        TextView textView = SnackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+    }
 
     private void setTitleDialog(String reason) {
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -377,7 +384,9 @@ public class NewTextActivity extends AppCompatActivity {
 
         protected void onProgressUpdate(String... progress) {
             View parentLayout = findViewById(android.R.id.content);
-            Snackbar.make(parentLayout, progress[0], Snackbar.LENGTH_LONG).show();
+            Snackbar progressSnack = Snackbar.make(parentLayout, progress[0], Snackbar.LENGTH_LONG);
+            setSnackbarStyle(progressSnack);
+            progressSnack.show();
 
         }
 
@@ -703,8 +712,9 @@ public class NewTextActivity extends AppCompatActivity {
                 //Attempts to summarize
                 if (capturedString.equals("")){
                     View parentLayout = findViewById(android.R.id.content);
-                    Snackbar.make(parentLayout, "No string to summarize", Snackbar.LENGTH_SHORT)
-                            .show();
+                    Snackbar noStringSnack = Snackbar.make(parentLayout, "No string to summarize", Snackbar.LENGTH_SHORT);
+                    setSnackbarStyle(noStringSnack);
+                    noStringSnack.show();
 
                     Log.d("ApkTAG","No string to summarize");
                 } else {

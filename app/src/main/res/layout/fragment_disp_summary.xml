@@ -1,17 +1,25 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="10dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="10dp"
 
 
     tools:context="com.example.nick2.booksummary.DispSummaryFragment"
     >
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
 
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         >
 
 
@@ -73,6 +81,5 @@
 
 
     </android.support.constraint.ConstraintLayout>
-
 
 </FrameLayout>

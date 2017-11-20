@@ -58,7 +58,7 @@
         app:backgroundTint="@color/complementColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:srcCompat="@mipmap/ic_camera_alt_white_48dp" />
 
 
 </android.support.constraint.ConstraintLayout>
