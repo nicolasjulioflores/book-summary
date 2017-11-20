@@ -172,8 +172,8 @@ public class NewTextActivity extends AppCompatActivity {
     }
 
 
-
-    private void setTitleDialog(String reason) {
+//Boolean b is true if Save was clicked instead Summarize
+    private void setTitleDialog(String reason,final boolean b) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(reason);
         alertDialog.setMessage("Enter a title for your text:");
@@ -190,12 +190,21 @@ public class NewTextActivity extends AppCompatActivity {
                 EditText TitleBox = findViewById(R.id.title);
                 String newTitle = input.getText().toString();
 
+
                 //TODO: If title in use -> show a toast
                 if (titleInUse(newTitle)) {
 
                 }
+                if (newTitle.equals("")){
 
-                saveDataAndQuit(newTitle);
+                }
+
+                TitleBox.setText(newTitle);
+
+                if (b){
+                    saveDataAndQuit(newTitle);
+                }
+
 
             }
         });
@@ -645,9 +654,9 @@ public class NewTextActivity extends AppCompatActivity {
             TitleBox = findViewById(R.id.title);
             String title = TitleBox.getText().toString();
             if (title.equals("")) {
-                setTitleDialog("Missing Title");
+                setTitleDialog("Missing Title",true);
             } else if (titleInUse(title)) {
-                setTitleDialog("Title already in use");
+                setTitleDialog("Title already in use",true);
             } else {
                 // Save the data in prefs
                 saveDataAndQuit(title);
@@ -663,7 +672,7 @@ public class NewTextActivity extends AppCompatActivity {
             TitleBox = findViewById(R.id.title);
             String title = TitleBox.getText().toString();
             if (title.equals("")) {
-                setTitleDialog("Missing Title");
+                setTitleDialog("Missing Title",false);
             } else {
                 //Attempts to summarize
                 if (capturedString.equals("")){

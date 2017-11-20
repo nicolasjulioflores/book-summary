@@ -47,6 +47,8 @@ public class DispSummaryFragment extends DialogFragment {
     //Default number of sentences in the summary
     private static int numSentences=5;
 
+    private Snackbar summarySnackBar;
+
     String summary;
 
     private static String title="Title";
@@ -97,16 +99,9 @@ public class DispSummaryFragment extends DialogFragment {
         //TODO: Store summary for title somewhere;
 
 
-        ProgressBar pBar=thisView.findViewById(R.id.progressBar);
-        pBar.setProgress(10);
-        //Ask for number of sentences
-
-
-        this.textBox = thisView.findViewById(R.id.text);
-        textBox.setText("Sending Request to Server");
-
-
-        pBar.setProgress(50);
+        summarySnackBar=Snackbar.make(thisView, "Sending Request to Server",
+                Snackbar.LENGTH_INDEFINITE);
+        summarySnackBar.show();
 
         new Thread(new Runnable() {
 
@@ -130,6 +125,9 @@ public class DispSummaryFragment extends DialogFragment {
 
                 } catch (Exception e) {
                     Log.d("Exception in Response", "ERROR" + e.toString());
+                    summarySnackBar=Snackbar.make(thisView, e.toString(),
+                            Snackbar.LENGTH_SHORT);
+                    summarySnackBar.show();
                     summary=null;
                 }
 
@@ -141,18 +139,13 @@ public class DispSummaryFragment extends DialogFragment {
 
     public String handleResponse(String res){
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //stuff that updates ui
-                textBox.setText("Parsing Response from Server");
-                ProgressBar pBar=thisView.findViewById(R.id.progressBar);
-                pBar.setProgress(90);
+        //hide snackbar
+        if(summarySnackBar !=null){
+            if (summarySnackBar.isShown()){
+                summarySnackBar.dismiss();
             }
-        });
+        }
 
-
-        Log.d("APKTAG","in HandleResponse");
         try {
 
             JSONObject jObject = new JSONObject(res);
@@ -169,10 +162,11 @@ public class DispSummaryFragment extends DialogFragment {
 
             }
 
-            Log.d("APK1",summary);
-
 
         } catch(Exception e){
+            Snackbar.make(thisView, e.toString(),
+                    Snackbar.LENGTH_SHORT)
+                    .show();
 
         }
 
@@ -187,8 +181,6 @@ public class DispSummaryFragment extends DialogFragment {
                 titlebox.setVisibility(View.VISIBLE);
                 titlebox.setText("Summary for: "+title);
                 textBox.setText(summary);
-                ProgressBar pBar=thisView.findViewById(R.id.progressBar);
-                pBar.setVisibility(View.INVISIBLE);
 
                 Button saveButton=thisView.findViewById(R.id.saveButton);
                 saveButton.setVisibility(View.VISIBLE);
@@ -219,7 +211,6 @@ public class DispSummaryFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_disp_summary, container, false);
         thisView=v;
         this.textBox = v.findViewById(R.id.text);
-        ((TextView)textBox).setText("Created");
 
 //        // Watch for button clicks.
 //        Button button = (Button)v.findViewById(R.id.show);

@@ -356,6 +356,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void deleteSelectedViews(String key) {
+
+        if (Deck==null){
+            return;
+        }
+
         for (Iterator<CardView> iterator = Deck.iterator(); iterator.hasNext();) {
             CardView card = iterator.next();
             if (card.getTag() != null && getResources().getString(R.string.CLICKED).equals(card.getTag())) {
