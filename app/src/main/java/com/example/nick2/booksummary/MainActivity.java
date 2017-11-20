@@ -177,6 +177,8 @@ public class MainActivity extends AppCompatActivity
             LLMenu.removeAllViews();
 
             TextView about=new TextView(getBaseContext());
+            about.setTextColor(getResources().getColor(R.color.black));
+            about.setPadding(8,8,8,8);
             fillWithString(about);
 
             LLMenu.addView(about);
