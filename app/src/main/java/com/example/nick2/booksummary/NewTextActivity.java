@@ -42,6 +42,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -82,12 +83,22 @@ public class NewTextActivity extends AppCompatActivity {
     // The layout elements in the activity
     private EditText TitleBox;
 
+    //API key for the API
+    private static final String APIKEY="3e317094-1306-4472-8c1a-d69f395730d6";
+
+    //Default number of sentences in the summary
+    private static int numSentences=5;
 
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
     private static final int REQUEST_IMAGE_CAPTURE = 25;
 
     private String mCurrentImagePath;
+
+    private String summary;
+    private String title;
+
+    private Snackbar summarySnackBar;
 
     private Activity thisActivity;
 
@@ -140,6 +151,7 @@ public class NewTextActivity extends AppCompatActivity {
 
         EditText titleBox = findViewById(R.id.title);
         titleBox.setText(title);
+        this.title=title;
 
         String textPath = extras.getString(getResources().getString(R.string.SAVED_STRING));
 
@@ -157,25 +169,174 @@ public class NewTextActivity extends AppCompatActivity {
 
     }
 
-    private String readStringFromPath(String path) {
-        File textFile = new File(path);
-        String text;
-        try {
-            byte[] bytes = new byte[(int)textFile.length()];
-            FileInputStream in = new FileInputStream(textFile);
-            in.read(bytes);
-            text = new String(bytes);
-        } catch (IOException e) {
-            Log.e(TAG, e.toString());
-            e.printStackTrace();
-            return null;
-        }
 
-        return text;
+    // Create a dialog box that asks the humber of sentences to use in summary
+    private void startDialog(final String title, final String content) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Enter Number of Sentences to use in Summary");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setRawInputType(Configuration.KEYBOARD_12KEY);
+        alert.setView(input);
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Put actions for OK button here
+                String numSentencesString=input.getText().toString();
+                int numSentences;
+                try {
+                    numSentences = Integer.parseInt(numSentencesString);
+                } catch (Exception e){
+                    //Set default value to 5
+                    numSentences = 5;
+                }
+                sendResponse(content,numSentences);
+
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Put actions for CANCEL button here, or leave in blank
+            }
+        });
+        alert.show();
+
+
     }
 
 
-//Boolean b is true if Save was clicked instead Summarize
+
+    public String sendResponse(final String text,final int numSentences){
+
+        //Check if internet permission is there
+        //TODO: Create Floating Action Button For Summarize
+        //TODO: Change Log statements, tag to TAG
+        //TODO: Store summary for title somewhere;
+
+
+        summarySnackBar=Snackbar.make(findViewById(android.R.id.content), "Sending Request to Server",
+                Snackbar.LENGTH_INDEFINITE);
+        summarySnackBar.show();
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+
+                    OkHttpClient client = new OkHttpClient();
+
+                    MediaType mediaType = MediaType.parse("application/octet-stream");
+                    RequestBody body = RequestBody.create(mediaType, text);
+                    Request request = new Request.Builder()
+                            .url("http://api.intellexer.com/summarizeText?apikey="+APIKEY+"&returnedTopicsCount=1&structure=Autodetect&summaryRestriction="+numSentences+"&textStreamLength=1000&usePercentRestriction=false")
+                            .post(body)
+                            .addHeader("cache-control", "no-cache")
+                            .build();
+
+                    Response response = client.newCall(request).execute();
+
+                    summary= handleResponse(response.body().string());
+
+                } catch (Exception e) {
+                    Log.d("Exception in Response", "ERROR" + e.toString());
+                    summarySnackBar=Snackbar.make(findViewById(android.R.id.content), e.toString(),
+                            Snackbar.LENGTH_SHORT);
+                    summarySnackBar.show();
+                    summary=null;
+                }
+
+            }
+        }).start();
+
+        return summary;
+    }
+
+    public String handleResponse(String res){
+
+        //hide snackbar
+        if(summarySnackBar !=null){
+            if (summarySnackBar.isShown()){
+                summarySnackBar.dismiss();
+            }
+        }
+
+        try {
+
+            JSONObject jObject = new JSONObject(res);
+            JSONArray jsonArray = (JSONArray)jObject.get("items");
+
+            summary="";
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject j=jsonArray.getJSONObject(i);
+                summary += (i+1) + ") ";
+                summary += j.get("text").toString();
+                summary +="\n";
+                summary +="\n";
+
+            }
+
+
+        } catch(Exception e){
+            Snackbar.make(findViewById(android.R.id.content), e.toString(),
+                    Snackbar.LENGTH_SHORT)
+                    .show();
+
+        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d("ApkTAG",summary);
+                summaryDialog(title,summary);
+
+            }
+        });
+
+
+        return summary;
+
+    }
+
+
+    //Using title and summarized content, Shows the summary to the user
+    void summaryDialog(final String title, final String content) {
+
+        this.title=title;
+
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mStackLevel++;
+
+
+
+                // DialogFragment.show() will take care of adding the fragment
+                // in a transaction.  We also want to remove any currently showing
+                // dialog, so make our own transaction and take care of that here.
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
+
+
+                Log.d("ApkTAG!!!!!!",summary);
+
+                // Create and show the dialog.
+                DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,summary);
+                newFragment.show(ft, "dialog");
+
+            }
+        });
+
+    }
+
+
+    //Boolean b is true if Save was clicked instead Summarize
     private void setTitleDialog(String reason,final boolean b) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(reason);
@@ -587,18 +748,6 @@ public class NewTextActivity extends AppCompatActivity {
         }
     }
 
-    //Switches Both save button and summarize button
-    private void switchSaveButton() {
-        EditText capturedStringBox = findViewById(R.id.capturedString);
-
-        FloatingActionButton saveButton = findViewById(R.id.saveButton);
-        if (capturedStringBox.getText().toString().equals("")) saveButton.hide();
-        else saveButton.show();
-
-        FloatingActionButton summarizeButton = findViewById(R.id.summarizeButton);
-        if (capturedStringBox.getText().toString().equals("")) summarizeButton.hide();
-        else summarizeButton.show();
-    }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
@@ -607,56 +756,7 @@ public class NewTextActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
-    void summaryDialog(String title, String content, Integer numSentences) {
-        mStackLevel++;
 
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-
-        // Create and show the dialog.
-        DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,content,numSentences);
-        newFragment.show(ft, "dialog");
-    }
-
-    // Create a dialog box that disappears when the user correctly types in their password
-    private void startDialog(final String title, final String content) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Enter Number of Sentences to use in Summary");
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setRawInputType(Configuration.KEYBOARD_12KEY);
-        alert.setView(input);
-        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                //Put actions for OK button here
-                String numSentencesString=input.getText().toString();
-                int numSentences;
-                try {
-                    numSentences = Integer.parseInt(numSentencesString);
-                } catch (Exception e){
-                    //Set default value to 5
-                    numSentences = 5;
-                }
-                summaryDialog(title,content,numSentences);
-            }
-        });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                //Put actions for CANCEL button here, or leave in blank
-            }
-        });
-        alert.show();
-
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -721,5 +821,22 @@ public class NewTextActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    private String readStringFromPath(String path) {
+        File textFile = new File(path);
+        String text;
+        try {
+            byte[] bytes = new byte[(int)textFile.length()];
+            FileInputStream in = new FileInputStream(textFile);
+            in.read(bytes);
+            text = new String(bytes);
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            e.printStackTrace();
+            return null;
+        }
+
+        return text;
+    }
 
 }
