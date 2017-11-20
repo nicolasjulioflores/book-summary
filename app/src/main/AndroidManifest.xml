@@ -5,12 +5,10 @@
     <uses-feature android:name="android.hardware.camera" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
 
     <application
@@ -20,7 +18,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.nick2.booksummary.fileprovider"
@@ -41,7 +38,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewTextActivity"></activity>
+        <activity android:name=".NewTextActivity" />
+        <activity
+            android:name=".NavigatingActivity"
+            android:label="@string/title_activity_navigating"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

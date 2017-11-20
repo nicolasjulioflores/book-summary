@@ -161,8 +161,6 @@ public class NewTextActivity extends AppCompatActivity {
                 String title = TitleBox.getText().toString();
                 if (title.equals("")) {
                     setTitleDialog("Missing Title");
-                } else if (titleInUse(title)) {
-                    setTitleDialog("Title already in use");
                 } else {
                     //Attempts to summarize
                     if (capturedString.equals("")){

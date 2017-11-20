@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity {
 //        MenuItem deleteButton = findViewById(R.id.action_delete);
 //        deleteButton.tit
 
+        //Start navigating activity
+        Intent intent = new Intent(getBaseContext(), NavigatingActivity.class);
+        startActivity(intent);
+
         FloatingActionButton addNewText = (FloatingActionButton) findViewById(R.id.addNewText);
         addNewText.setOnClickListener(new View.OnClickListener() {
             @Override

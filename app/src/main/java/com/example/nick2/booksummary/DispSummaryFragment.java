@@ -236,7 +236,7 @@ public class DispSummaryFragment extends DialogFragment {
 
     private void saveSummary(String title,String content) {
         SharedPreferences preferences = getActivity().getBaseContext().getSharedPreferences(
-                getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
+                getString(R.string.summary_key), Context.MODE_PRIVATE);
 
         // Store the string in a file
         File textFile;
@@ -251,6 +251,7 @@ public class DispSummaryFragment extends DialogFragment {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(textFile, true));
             writer.write(content);
+            writer.flush();
         } catch (IOException e) {
             Log.e(TAG, e.toString());
             e.printStackTrace();

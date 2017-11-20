@@ -1,5 +1,6 @@
 <resources>
     <string name="string_data_preference_key">KEY123KEY123</string>
+    <string name="summary_key">KEY999KEY999</string>
     <string name="delete">Delete</string>
     <string name="delete_snackbar">Tap on items to select them for deletion</string>
     <string name="app_name">Book Summary</string>
@@ -22,4 +23,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_navigating">NavigatingActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
