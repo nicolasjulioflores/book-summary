@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewManager;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -53,6 +54,11 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Clear tutorial background
+                //Set background image
+                ScrollView svv= findViewById(R.id.svv);
+                svv.setBackgroundColor(Color.WHITE);
+
                 // Start the text recognition activity
                 Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
                 intent.setAction(getResources().getString(R.string.NEW_TEXT_ACTION));
@@ -68,6 +74,11 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Set background image
+        ScrollView svv= findViewById(R.id.svv);
+        svv.setBackground(getDrawable(R.drawable.homebackground));
+
     }
 
     @Override
@@ -133,11 +144,30 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_summary) {
+            //Set background image
+            ScrollView svv= findViewById(R.id.svv);
+            svv.setBackgroundColor(Color.WHITE);
+            setTitle("Saved Summaries");
+
             displaySummaries();
             key=getString(R.string.summary_key);
         } else if (id == R.id.nav_texts) {
+            //Set background image
+            ScrollView svv= findViewById(R.id.svv);
+            svv.setBackgroundColor(Color.WHITE);
+            setTitle("Saved Texts");
+
             displayTexts();
             key=getString(R.string.string_data_preference_key);
+        } else if (id == R.id.nav_home) {
+            //Set background image
+            ScrollView svv= findViewById(R.id.svv);
+            svv.setBackgroundColor(Color.WHITE);
+            setTitle("BookSummary");
+
+            //Clear views
+            LinearLayout LLMenu = findViewById(R.id.lly);
+            LLMenu.removeAllViews();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
