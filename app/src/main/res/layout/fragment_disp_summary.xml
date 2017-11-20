@@ -16,51 +16,62 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        >
+        android:layout_marginTop="10dp">
 
 
         <TextView
             android:id="@+id/text"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_marginTop="40dp"
             android:layout_marginBottom="60dp"
+            android:layout_marginTop="40dp"
 
             android:scrollbars="vertical"
-            android:text="@string/hello_blank_fragment"
-             />
+            android:text="@string/hello_blank_fragment" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/saveButtonLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:gravity="center"
-            android:progress="25"
-            app:layout_constraintEnd_toEndOf="@+id/text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text"
-            tools:scaleX="4" />
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Save"
-            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text" />
+            app:layout_constraintTop_toBottomOf="@+id/text">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/saveButtonContainer"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:foregroundGravity="center"
+                android:visibility="invisible"
+                android:src="@color/complementColor" />
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@mipmap/ic_save_white_24dp"
+                android:foregroundGravity="center"
+                android:gravity="center_horizontal"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/saveButtonContainer"
+                app:layout_constraintEnd_toEndOf="@+id/saveButtonContainer"
+                app:layout_constraintStart_toStartOf="@+id/saveButtonContainer"
+                app:layout_constraintTop_toTopOf="@+id/saveButtonContainer" />
+
+        </android.support.constraint.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/titleView"
