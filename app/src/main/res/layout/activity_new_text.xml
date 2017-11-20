@@ -11,37 +11,59 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context="com.example.nick2.booksummary.NewTextActivity">
+    <TextView
+        android:id="@+id/titleIdentify"
+        android:text="Title"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:textSize="32sp" />
 
     <EditText
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/newTitleHint"
         android:inputType="textPersonName"
         android:backgroundTint="@color/complementColor"
         android:textCursorDrawable="@drawable/colored_cursor"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleIdentify" />
+
+    <TextView
+        android:id="@+id/textIdentify"
+        android:text="Text"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:textSize="32sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"/>
 
     <EditText
         android:id="@+id/capturedString"
-        android:layout_width="356dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:background="@android:color/transparent"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/my_rounded_text_border"
         android:textCursorDrawable="@drawable/colored_cursor"
         android:ems="10"
         android:inputType="textMultiLine"
         android:singleLine="false"
 
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
 
