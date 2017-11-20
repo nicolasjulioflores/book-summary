@@ -42,7 +42,8 @@
         <activity
             android:name=".NavigatingActivity"
             android:label="@string/title_activity_navigating"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
     </application>
 
 </manifest>
