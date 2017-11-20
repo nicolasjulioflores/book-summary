@@ -33,6 +33,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String TAG = "MainActivity";
     private Snackbar mDeleteSnackbar;
     private List<CardView> Deck;
     private NavigationView navigationView;
@@ -216,7 +217,8 @@ public class MainActivity extends AppCompatActivity
             // Now add the title to the card
             TextView newText = new TextView(getBaseContext());
             newText.setText(title);
-            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
+            float textSize = (float) getResources().getInteger(R.integer.PRIMARY_TEXT_SIZE);
+            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             newText.setTextColor(Color.WHITE);
             newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
@@ -270,7 +272,7 @@ public class MainActivity extends AppCompatActivity
         childLayout.setLayoutParams(linearParams);
         childLayout.setOrientation(LinearLayout.VERTICAL);
         for (final String title: userData.keySet()) {
-            Log.d("APKTAG", "Title for doc: " + title);
+            Log.d(TAG, "Title for doc: " + title);
 
             // Set the layout for the new CardViews to be added
             CardView newCard = new CardView(this);
@@ -294,7 +296,9 @@ public class MainActivity extends AppCompatActivity
             // Now add the title to the card
             TextView newText = new TextView(getBaseContext());
             newText.setText(title);
-            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30f);
+            float textSize = (float) getResources().getInteger(R.integer.PRIMARY_TEXT_SIZE);
+
+            newText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             newText.setTextColor(Color.WHITE);
             newText.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
@@ -393,6 +397,21 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Need to save what we were displaying
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Need to show what we were displaying
 
     }
 

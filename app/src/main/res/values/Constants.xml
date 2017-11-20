@@ -9,4 +9,6 @@
     <item name = "CLICKED" type="string">This view was clicked</item>
     <item name = "NOT_CLICKED" type="string">This was was not clicked</item>
     <item name = "RANDOM_BASE" type="integer">10934</item>
+    <item name = "PRIMARY_TEXT_SIZE" type="integer">24</item>
+    <item name = "SECONDARY_MENU_TEXT_SIZE" type="integer">12</item>
 </resources>
