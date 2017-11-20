@@ -43,26 +43,18 @@ public class DispSummaryFragment extends DialogFragment {
     //Flag if summary is generated or not
     private Boolean summaryGenerated=false;
 
-    //API key for the API
-    private static final String APIKEY="3e317094-1306-4472-8c1a-d69f395730d6";
-
-    //Default number of sentences in the summary
-    private static int numSentences=5;
-
-    String summary;
-
     private static String title="Title";
     private static String content;
 
-    TextView textBox;
+    //TextView textBox;
     private View thisView;
 
-    static DispSummaryFragment newInstance(int num,String title1, String content1,int n) {
+    static DispSummaryFragment newInstance(int num,String title1, String content1) {
         DispSummaryFragment f = new DispSummaryFragment();
 
-        title=title1;
-        content=content1;
-        numSentences=n;
+        f.title=title1;
+        f.content=content1;
+
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
@@ -72,6 +64,8 @@ public class DispSummaryFragment extends DialogFragment {
         return f;
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,134 +73,36 @@ public class DispSummaryFragment extends DialogFragment {
         int style = DialogFragment.STYLE_NORMAL, theme = 0;
 
         setStyle(style, theme);
-
-
     }
 
     public void onResume(){
         super.onResume();
 
+        //Display things if not displayed
         if (!summaryGenerated) {
-            sendResponse(content);
-        }
-    }
+            summaryGenerated=true;
 
-    public String sendResponse(final String text){
+            TextView titlebox = thisView.findViewById(R.id.titleView);
+            titlebox.setVisibility(View.VISIBLE);
+            titlebox.setText("Summary for " + title);
+            TextView textBox = thisView.findViewById(R.id.text);
+            textBox.setText(content);
 
-        //Check if internet permission is there
-        //TODO: Create Floating Action Button For Summarize
-        //TODO: Change Log statements, tag to TAG
-        //TODO: Store summary for title somewhere;
+            Button saveButton = thisView.findViewById(R.id.saveButton);
+            saveButton.setVisibility(View.VISIBLE);
 
+            ImageView saveButtonContainer = thisView.findViewById(R.id.saveButtonContainer);
+            saveButtonContainer.setVisibility(View.VISIBLE);
 
-        //Ask for number of sentences
-
-
-        this.textBox = thisView.findViewById(R.id.text);
-        textBox.setText("Sending Request to Server");
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-
-                    OkHttpClient client = new OkHttpClient();
-
-                    MediaType mediaType = MediaType.parse("application/octet-stream");
-                    RequestBody body = RequestBody.create(mediaType, text);
-                    Request request = new Request.Builder()
-                            .url("http://api.intellexer.com/summarizeText?apikey="+APIKEY+"&returnedTopicsCount=1&structure=Autodetect&summaryRestriction="+numSentences+"&textStreamLength=1000&usePercentRestriction=false")
-                            .post(body)
-                            .addHeader("cache-control", "no-cache")
-                            .build();
-
-                    Response response = client.newCall(request).execute();
-
-                    summary= handleResponse(response.body().string());
-
-                } catch (Exception e) {
-                    Log.d("Exception in Response", "ERROR" + e.toString());
-                    summary=null;
+            saveButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    saveSummary(title, content);
                 }
-
-            }
-        }).start();
-
-        return summary;
-    }
-
-    public String handleResponse(String res){
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //stuff that updates ui
-                textBox.setText("Parsing Response from Server");
-
-            }
-        });
-
-
-        Log.d("APKTAG","in HandleResponse");
-        try {
-
-            JSONObject jObject = new JSONObject(res);
-            JSONArray jsonArray = (JSONArray)jObject.get("items");
-
-            summary="";
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject j=jsonArray.getJSONObject(i);
-                summary += (i+1) + ") ";
-                summary += j.get("text").toString();
-                summary +="\n";
-                summary +="\n";
-
-            }
-
-            Log.d("APK1",summary);
-
-
-        } catch(Exception e){
+            });
 
         }
-
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                summaryGenerated=true;
-
-                //stuff that updates
-                TextView titlebox=thisView.findViewById(R.id.titleView);
-                titlebox.setVisibility(View.VISIBLE);
-                titlebox.setText("Summary for: "+title);
-                textBox.setText(summary);
-
-                Button saveButton=thisView.findViewById(R.id.saveButton);
-                ImageView saveButtonContainer =thisView.findViewById(R.id.saveButtonContainer);
-                saveButtonContainer.setVisibility(View.VISIBLE);
-                saveButton.setVisibility(View.VISIBLE);
-                saveButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        saveSummary(title,summary);
-
-                    }
-                });
-            }
-        });
-
-
-        return summary;
-
     }
-
-
-
-
 
 
     @Override
@@ -214,18 +110,6 @@ public class DispSummaryFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_disp_summary, container, false);
         thisView=v;
-        this.textBox = v.findViewById(R.id.text);
-        ((TextView)textBox).setText("Created");
-
-//        // Watch for button clicks.
-//        Button button = (Button)v.findViewById(R.id.show);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                // When button is clicked, call up to owning activity.
-//                ((FragmentDialog)getActivity()).showDialog();
-//            }
-//
-//        });
 
         return v;
     }
