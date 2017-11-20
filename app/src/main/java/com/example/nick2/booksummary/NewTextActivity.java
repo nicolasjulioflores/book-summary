@@ -107,6 +107,7 @@ public class NewTextActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_text);
 
+
         thisActivity=this;
 
         if (getResources().getString(R.string.NEW_TEXT_ACTION).equals(getIntent().getAction())) {
@@ -353,14 +354,20 @@ public class NewTextActivity extends AppCompatActivity {
                 String newTitle = input.getText().toString();
 
 
-                while (true) {
+                //while (true) {
+
                     boolean titleUsed = titleInUse(newTitle);
-                    if (!titleUsed && !newTitle.equals("")) break;
+                    if (!titleUsed && !newTitle.equals("")){
+                        TitleBox.setText(newTitle);
+                        //break;
+                    }
 
 
                     // This is definitely not working
 
                     if (titleInUse(newTitle)) {
+
+                        //Toast.makeText(getBaseContext(),"Title in Use",Toast.LENGTH_SHORT);
 
                         View parentLayout = findViewById(android.R.id.content);
                         if (titleUsed) {
@@ -370,20 +377,20 @@ public class NewTextActivity extends AppCompatActivity {
                             dialog.dismiss();
                             //setTitleDialog(getResources().getString(R.string.NO_TITLE));
                         }
+                    } else if (newTitle.equals("")) {
+                        //Toast.makeText(getBaseContext(),"Title in Use",Toast.LENGTH_SHORT);
+                    } else {
+                        TitleBox.setText(newTitle);
+                        if (b) {
+                            saveDataAndQuit(newTitle);
+                        }
                     }
-                    if (newTitle.equals("")) {
 
-                    }
 
-                    TitleBox.setText(newTitle);
-
-                    if (b) {
-                        saveDataAndQuit(newTitle);
-                    }
 
 
                 }
-            }
+            //}
         });
 
         final AlertDialog dialog = alertDialog.create();
