@@ -6,7 +6,7 @@
 
     <item
         android:id="@+id/summarizeButton"
-        android:icon="@drawable/ic_launcher2"
+        android:icon="@drawable/ic_menu_send"
         android:orderInCategory="1"
         android:title="@string/Summarize"
         app:showAsAction="ifRoom"/>
