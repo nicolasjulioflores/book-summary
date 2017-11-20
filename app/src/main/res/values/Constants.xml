@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name = "APP_NAME" type="string">TextToSummary</item>
     <item name = "NEW_TEXT_ACTION" type="string">40</item>
     <item name = "EDIT_TEXT_ACTION" type ="string">41</item>
     <item name = "TITLE" type = "string">TITLE GOES HERE</item>

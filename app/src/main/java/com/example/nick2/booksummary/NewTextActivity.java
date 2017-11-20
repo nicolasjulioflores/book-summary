@@ -37,6 +37,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -126,60 +128,6 @@ public class NewTextActivity extends AppCompatActivity {
         });
 
 
-        switchSaveButton();
-        FloatingActionButton saveText = (FloatingActionButton) findViewById(R.id.saveButton);
-        saveText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Log.d(TAG, "Save Button hit");
-
-                TitleBox = findViewById(R.id.title);
-                String title = TitleBox.getText().toString();
-                if (title.equals("")) {
-                    setTitleDialog("Missing Title");
-                } else if (titleInUse(title)) {
-                    setTitleDialog("Title already in use");
-                } else {
-                    // Save the data in prefs
-                    saveDataAndQuit(title);
-                }
-
-            }
-        });
-
-        FloatingActionButton summarizeText = (FloatingActionButton) findViewById(R.id.summarizeButton);
-        summarizeText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            EditText capturedStringBox = findViewById(R.id.capturedString);
-            String capturedString = capturedStringBox.getText().toString();
-
-            //Make sure Title exists and is allowed
-                TitleBox = findViewById(R.id.title);
-                String title = TitleBox.getText().toString();
-                if (title.equals("")) {
-                    setTitleDialog("Missing Title");
-                } else {
-                    //Attempts to summarize
-                    if (capturedString.equals("")){
-                        Toast.makeText(thisActivity,"No string to summarize",Toast.LENGTH_SHORT);
-                        Log.d("ApkTAG","No string to summarize");
-                    } else {
-                        //Opens a Dialog window which asks the number of sentences to use in summary
-                        //The Dialog window automatically calls summaryDialog(title,capturedString);
-                        startDialog(title,capturedString);
-                        //summaryDialog(title,capturedString);
-                    }
-                }
-
-
-
-
-            }
-
-        });
     }
 
     private void setDefaults() {
@@ -393,9 +341,9 @@ public class NewTextActivity extends AppCompatActivity {
         }
 
         protected void onProgressUpdate(String... progress) {
-            Toast.makeText(getBaseContext(),
-                    progress[0],
-                    Toast.LENGTH_SHORT ).show();
+            View parentLayout = findViewById(android.R.id.content);
+            Snackbar.make(parentLayout, progress[0], Snackbar.LENGTH_LONG).show();
+
         }
 
         protected void onPostExecute(String capturedString) {
@@ -413,7 +361,7 @@ public class NewTextActivity extends AppCompatActivity {
             baseString += "\n"+capturedString+"\n";
             capturedStringBox.setText(baseString);
             capturedStringBox.setBackground(getDrawable(R.drawable.my_rounded_text_border));
-            switchSaveButton();
+
 
         }
     }
@@ -673,6 +621,69 @@ public class NewTextActivity extends AppCompatActivity {
         alert.show();
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_new_text_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+
+        if (id == R.id.saveButton ) {
+
+            Log.d(TAG, "Save Button hit");
+
+            TitleBox = findViewById(R.id.title);
+            String title = TitleBox.getText().toString();
+            if (title.equals("")) {
+                setTitleDialog("Missing Title");
+            } else if (titleInUse(title)) {
+                setTitleDialog("Title already in use");
+            } else {
+                // Save the data in prefs
+                saveDataAndQuit(title);
+            }
+
+            return true;
+        } else if (id == R.id.summarizeButton) {
+
+            EditText capturedStringBox = findViewById(R.id.capturedString);
+            String capturedString = capturedStringBox.getText().toString();
+
+            //Make sure Title exists and is allowed
+            TitleBox = findViewById(R.id.title);
+            String title = TitleBox.getText().toString();
+            if (title.equals("")) {
+                setTitleDialog("Missing Title");
+            } else {
+                //Attempts to summarize
+                if (capturedString.equals("")){
+                    View parentLayout = findViewById(android.R.id.content);
+                    Snackbar.make(parentLayout, "No string to summarize", Snackbar.LENGTH_SHORT)
+                            .show();
+
+                    Log.d("ApkTAG","No string to summarize");
+                } else {
+                    //Opens a Dialog window which asks the number of sentences to use in summary
+                    //The Dialog window automatically calls summaryDialog(title,capturedString);
+                    startDialog(title, capturedString);
+                    //summaryDialog(title,capturedString);
+                }
+            }
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
