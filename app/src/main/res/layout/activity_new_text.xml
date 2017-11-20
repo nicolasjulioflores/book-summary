@@ -16,6 +16,7 @@
         android:hint="@string/newTitleHint"
         android:inputType="textPersonName"
         android:backgroundTint="@color/complementColor"
+        android:textCursorDrawable="@drawable/colored_cursor"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +27,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
-        android:backgroundTint="@color/complementColor"
+        android:textCursorDrawable="@drawable/colored_cursor"
         android:ems="10"
         android:inputType="textMultiLine"
         android:singleLine="false"
@@ -41,7 +42,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:clickable="true"
-        app:backgroundTint="@color/SoftBlue1"
+        app:backgroundTint="@color/complementColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@android:drawable/ic_menu_camera" />
@@ -53,7 +54,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:clickable="true"
-        app:backgroundTint="@color/SoftBlue1"
+        app:backgroundTint="@color/complementColor"
         app:layout_constraintBottom_toTopOf="@+id/startCamera"
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@android:drawable/ic_menu_save" />

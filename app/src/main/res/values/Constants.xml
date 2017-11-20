@@ -5,4 +5,7 @@
     <item name = "TITLE" type = "string">TITLE GOES HERE</item>
     <item name = "SAVED_STRING" type ="string">SAVED STRING GOES HERE</item>
     <item name = "API_KEY" type="string">3e317094-1306-4472-8c1a-d69f395730d6</item>
+    <item name = "CLICKED" type="string">This view was clicked</item>
+    <item name = "NOT_CLICKED" type="string">This was was not clicked</item>
+    <item name = "RANDOM_BASE" type="integer">10934</item>
 </resources>
