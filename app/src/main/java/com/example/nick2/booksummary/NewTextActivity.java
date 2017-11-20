@@ -207,17 +207,20 @@ public class NewTextActivity extends AppCompatActivity {
                 EditText TitleBox = findViewById(R.id.title);
                 String newTitle = input.getText().toString();
 
+
                 while (true) {
                     boolean titleUsed = titleInUse(newTitle);
                     if (!titleUsed && !newTitle.equals("")) break;
 
+
+                    // This is definitely not working
                     View parentLayout = findViewById(android.R.id.content);
                     if (titleUsed) {
                         dialog.dismiss();
-                        setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
+                        //setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
                     } else {
                         dialog.dismiss();
-                        setTitleDialog(getResources().getString(R.string.NO_TITLE));
+                        //setTitleDialog(getResources().getString(R.string.NO_TITLE));
                     }
                 }
 
@@ -673,6 +676,20 @@ public class NewTextActivity extends AppCompatActivity {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Enter Number of Sentences to use in Summary");
         final EditText input = new EditText(this);
+
+        // set the style for the dialog box
+        ColorStateList colorStateList = ColorStateList.valueOf(getResources().getColor(R.color.complementColor));
+        ViewCompat.setBackgroundTintList(input, colorStateList);
+        try {
+            Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+            f.setAccessible(true);
+            f.set(input, R.drawable.colored_cursor);
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't set cursor to diff color");
+            e.printStackTrace();
+        }
+
+        // Set the input type
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setRawInputType(Configuration.KEYBOARD_12KEY);
         alert.setView(input);
@@ -721,9 +738,15 @@ public class NewTextActivity extends AppCompatActivity {
 
             TitleBox = findViewById(R.id.title);
             String title = TitleBox.getText().toString();
+            String action = getIntent().getAction();
+            Bundle extras = getIntent().getExtras();
+            boolean editingText = (getResources().getString(R.string.EDIT_TEXT_ACTION).equals(action) &&
+                    title.equals(extras.getString(getResources().getString(R.string.TITLE))));
+
             if (title.equals("")) {
                 setTitleDialog(getResources().getString(R.string.NO_TITLE));
-            } else if (titleInUse(title)) {
+            } else if (titleInUse(title) && !editingText) {
+
                 setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
             } else {
                 // Save the data in prefs
@@ -764,15 +787,6 @@ public class NewTextActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        File imageFile = new File(mCurrentImagePath);
-        File cropImageFile = new File(mCurrentCroppedImagePath);
-        if (imageFile.exists()) imageFile.delete();
-        if (cropImageFile.exists()) cropImageFile.delete();
-
-    }
 
 
 }
