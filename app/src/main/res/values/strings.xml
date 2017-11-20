@@ -26,6 +26,10 @@
     <string name="title_activity_navigating">NavigatingActivity</string>
     <string name="TITLE_IN_USE">Title already in use</string>
     <string name="NO_TITLE">Missing title</string>
+    <string name="HOME">HOME</string>
+    <string name="TEXTS">TEXTS</string>
+    <string name="SUMMARIES">SUMMARIES</string>
+    <string name="SCREEN_STATE">SCREEN STATE</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

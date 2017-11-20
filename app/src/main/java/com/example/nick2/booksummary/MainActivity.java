@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
 
     //Key to select either texts or summaries
+    private String screen;
     private String key;
 
     @Override
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_navigating);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        screen = getResources().getString(R.string.HOME);
 
         key=getString(R.string.string_data_preference_key);
 
@@ -145,30 +148,19 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_summary) {
-            //Set background image
-            ScrollView svv= findViewById(R.id.svv);
-            svv.setBackgroundColor(Color.WHITE);
-            setTitle("Saved Summaries");
 
+            screen = getResources().getString(R.string.SUMMARIES);
             displaySummaries();
             key=getString(R.string.summary_key);
         } else if (id == R.id.nav_texts) {
-            //Set background image
-            ScrollView svv= findViewById(R.id.svv);
-            svv.setBackgroundColor(Color.WHITE);
-            setTitle("Saved Texts");
 
+            screen = getResources().getString(R.string.TEXTS);
             displayTexts();
             key=getString(R.string.string_data_preference_key);
         } else if (id == R.id.nav_home) {
-            //Set background image
-            ScrollView svv= findViewById(R.id.svv);
-            svv.setBackgroundColor(Color.WHITE);
-            setTitle("BookSummary");
 
-            //Clear views
-            LinearLayout LLMenu = findViewById(R.id.lly);
-            LLMenu.removeAllViews();
+            screen = getResources().getString(R.string.HOME);
+            displayHome();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -176,9 +168,29 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void displayHome() {
+        //Set background image
+        Log.d(TAG, "displayHome");
+        ScrollView svv= findViewById(R.id.svv);
+        svv.setBackgroundColor(Color.WHITE);
+        setTitle("BookSummary");
+        screen = getResources().getString(R.string.HOME);
+
+        //Clear views
+        LinearLayout LLMenu = findViewById(R.id.lly);
+        LLMenu.removeAllViews();
+    }
+
+
     //Gathers stored summaries from the file and displays it in the window
     private void displaySummaries() {
-        Log.d("APKTAG", "in displaySummaries()");
+
+        //Set background image
+        ScrollView svv= findViewById(R.id.svv);
+        svv.setBackgroundColor(Color.WHITE);
+        setTitle("Saved Summaries");
+
+        Log.d(TAG, "in displaySummaries()");
         SharedPreferences preferences = getBaseContext().
                 getSharedPreferences(getString(R.string.summary_key), Context.MODE_PRIVATE);
 
@@ -258,6 +270,12 @@ public class MainActivity extends AppCompatActivity
     //Gathers stored texts from the file and displays it in the window
     private void displayTexts() {
         Log.d("APKTAG", "in displayTexts()");
+
+        //Set background image
+        ScrollView svv= findViewById(R.id.svv);
+        svv.setBackgroundColor(Color.WHITE);
+        setTitle("Saved Texts");
+
         SharedPreferences preferences = getBaseContext().
                 getSharedPreferences(getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
 
@@ -403,15 +421,26 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        outState.putString(getResources().getString(R.string.SCREEN_STATE), screen);
         // Need to save what we were displaying
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        screen = savedInstanceState.getString(getResources().getString(R.string.SCREEN_STATE));
 
         // Need to show what we were displaying
+        if (getResources().getString(R.string.TEXTS).equals(screen)) {
+            displayTexts();
+
+        } else if (getResources().getString(R.string.SUMMARIES).equals(screen)) {
+            displaySummaries();
+
+        } else {
+            displayHome();
+
+        }
 
     }
 
