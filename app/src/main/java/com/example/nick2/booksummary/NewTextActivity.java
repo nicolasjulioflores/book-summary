@@ -201,20 +201,9 @@ public class NewTextActivity extends AppCompatActivity {
 
     }
 
-    private void setTitleDialog(String reason) {
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-
-    }
-
 
 
     public String sendResponse(final String title,final String text,final int numSentences){
-
-        //Check if internet permission is there
-        //TODO: Create Floating Action Button For Summarize
-        //TODO: Change Log statements, tag to TAG
-        //TODO: Store summary for title somewhere;
-
 
         summarySnackBar=Snackbar.make(findViewById(android.R.id.content), "Sending Request to Server",
                 Snackbar.LENGTH_INDEFINITE);
@@ -334,7 +323,7 @@ public class NewTextActivity extends AppCompatActivity {
 
 
     //Boolean b is true if Save was clicked instead Summarize
-    private void setTitleDialog(String reason,final boolean b) {
+    private void setTitleDialog(String reason, final boolean b) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(reason);
         alertDialog.setMessage("Enter a title for your text:");
@@ -370,7 +359,7 @@ public class NewTextActivity extends AppCompatActivity {
 
 
                     // This is definitely not working
-                    //TODO: If title in use -> show a toast
+
                     if (titleInUse(newTitle)) {
 
                         View parentLayout = findViewById(android.R.id.content);
@@ -899,11 +888,9 @@ public class NewTextActivity extends AppCompatActivity {
 
             if (title.equals("")) {
                 setTitleDialog("Missing Title",true);
-                setTitleDialog(getResources().getString(R.string.NO_TITLE));
-            } else if (titleInUse(title)) {
-                setTitleDialog("Title already in use",true);
+
             } else if (titleInUse(title) && !editingText) {
-                setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
+                setTitleDialog("Title already in use",true);
             } else {
                 // Save the data in prefs
                 saveDataAndQuit(title);
