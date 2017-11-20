@@ -55,7 +55,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
-import com.soundcloud.android.crop.Crop;
+//import com.soundcloud.android.crop.Crop;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -185,15 +185,15 @@ public class NewTextActivity extends AppCompatActivity {
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //Put actions for OK button here
-                String numSentencesString=input.getText().toString();
+                String numSentencesString = input.getText().toString();
                 int numSentences;
                 try {
                     numSentences = Integer.parseInt(numSentencesString);
-                } catch (Exception e){
+                } catch (Exception e) {
                     //Set default value to 5
                     numSentences = 5;
                 }
-                sendResponse(content,numSentences);
+                sendResponse(content, numSentences);
 
             }
         });
@@ -203,6 +203,8 @@ public class NewTextActivity extends AppCompatActivity {
             }
         });
         alert.show();
+
+    }
 
     private void setTitleDialog(String reason) {
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
