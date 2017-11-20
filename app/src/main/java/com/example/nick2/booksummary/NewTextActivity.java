@@ -177,7 +177,7 @@ public class NewTextActivity extends AppCompatActivity {
 
 
     private void setTitleDialog(String reason) {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle(reason);
         alertDialog.setMessage("Enter a title for your text:");
 
@@ -205,9 +205,18 @@ public class NewTextActivity extends AppCompatActivity {
                 EditText TitleBox = findViewById(R.id.title);
                 String newTitle = input.getText().toString();
 
-                //TODO: If title in use -> show a toast
-                if (titleInUse(newTitle)) {
+                while (true) {
+                    boolean titleUsed = titleInUse(newTitle);
+                    if (!titleUsed && !newTitle.equals("")) break;
 
+                    View parentLayout = findViewById(android.R.id.content);
+                    if (titleUsed) {
+                        dialog.dismiss();
+                        setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
+                    } else {
+                        dialog.dismiss();
+                        setTitleDialog(getResources().getString(R.string.NO_TITLE));
+                    }
                 }
 
                 saveDataAndQuit(newTitle);
@@ -671,9 +680,9 @@ public class NewTextActivity extends AppCompatActivity {
             TitleBox = findViewById(R.id.title);
             String title = TitleBox.getText().toString();
             if (title.equals("")) {
-                setTitleDialog("Missing Title");
+                setTitleDialog(getResources().getString(R.string.NO_TITLE));
             } else if (titleInUse(title)) {
-                setTitleDialog("Title already in use");
+                setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
             } else {
                 // Save the data in prefs
                 saveDataAndQuit(title);

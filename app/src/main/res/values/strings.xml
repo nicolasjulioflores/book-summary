@@ -24,6 +24,8 @@
     <string name="Summarize">Summarize</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_navigating">NavigatingActivity</string>
+    <string name="TITLE_IN_USE">Title already in use</string>
+    <string name="NO_TITLE">Missing title</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
