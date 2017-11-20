@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,7 +44,8 @@ public class DispSummaryFragment extends DialogFragment {
     //API key for the API
     private static final String APIKEY="3e317094-1306-4472-8c1a-d69f395730d6";
 
-    private final int numSentences=5;
+    //Default number of sentences in the summary
+    private static int numSentences=5;
 
     String summary;
 
@@ -53,11 +55,12 @@ public class DispSummaryFragment extends DialogFragment {
     TextView textBox;
     private View thisView;
 
-    static DispSummaryFragment newInstance(int num,String title1, String content1) {
+    static DispSummaryFragment newInstance(int num,String title1, String content1,int n) {
         DispSummaryFragment f = new DispSummaryFragment();
 
         title=title1;
         content=content1;
+        numSentences=n;
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
@@ -93,10 +96,16 @@ public class DispSummaryFragment extends DialogFragment {
         //TODO: Change Log statements, tag to TAG
         //TODO: Store summary for title somewhere;
 
+
+        ProgressBar pBar=thisView.findViewById(R.id.progressBar);
+        pBar.setProgress(10);
+        //Ask for number of sentences
+
+
         this.textBox = thisView.findViewById(R.id.text);
         textBox.setText("Sending Request to Server");
 
-        ProgressBar pBar=thisView.findViewById(R.id.progressBar);
+
         pBar.setProgress(50);
 
         new Thread(new Runnable() {
@@ -254,7 +263,12 @@ public class DispSummaryFragment extends DialogFragment {
                 .putString(title, textFile.getAbsolutePath())
                 .apply();
 
-        Toast.makeText(getActivity(),"Saved!",Toast.LENGTH_SHORT);
+        //Hide save button if saving is successful
+        Button saveButton=thisView.findViewById(R.id.saveButton);
+        saveButton.setVisibility(View.INVISIBLE);
+        Snackbar.make(thisView, "Saved!",
+                Snackbar.LENGTH_SHORT)
+                .show();
     }
 
 

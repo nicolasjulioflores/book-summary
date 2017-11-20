@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -13,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
@@ -29,6 +31,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -156,20 +161,14 @@ public class NewTextActivity extends AppCompatActivity {
                 Toast.makeText(thisActivity,"No string to summarize",Toast.LENGTH_SHORT);
                 Log.d("ApkTAG","No string to summarize");
             } else {
-                summaryDialog(title,capturedString);
-            }
-//                String currentSummary = sendResponse(capturedString);
-//                if (currentSummary.equals(null) || currentSummary.equals("")){
-//                    //If summary is not available
-//                    Toast.makeText(thisActivity,"Error summarizing",Toast.LENGTH_SHORT);
-//                    Log.d("ApkTAG","Error to summarize");
-//                } else {
-//                    //If summary is available, open a dialog
-//                    Log.d("ApkTAG","Starting dialog");
-//
-//
-//
 
+                //Opens a Dialog window which asks the number of sentences to use in summary
+                //The Dialog window automatically calls summaryDialog(title,capturedString);
+                startDialog(title,capturedString);
+
+
+                //summaryDialog(title,capturedString);
+            }
 
 
             }
@@ -177,80 +176,80 @@ public class NewTextActivity extends AppCompatActivity {
         });
     }
 
-    public String sendResponse(final String text){
-
-        //Check if internet permission is there
-        //TODO: Create Floating Action Button For Summarize
-        //TODO: Change Log statements, tag to TAG
-        //TODO: Store summary for title somewhere;
-
-        //Check if network is available
-        if (!isNetworkAvailable()) {
-            // write your toast message("Please check your internet connection")
-            Toast.makeText(this,"Error connecting to the internet", Toast.LENGTH_SHORT);
-            return null;
-        }
-
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-
-                    OkHttpClient client = new OkHttpClient();
-
-                    MediaType mediaType = MediaType.parse("application/octet-stream");
-                    RequestBody body = RequestBody.create(mediaType, text);
-                    Request request = new Request.Builder()
-                            .url("http://api.intellexer.com/summarizeText?apikey="+APIKEY+"&returnedTopicsCount=1&structure=Autodetect&summaryRestriction="+numSentences+"&textStreamLength=1000&usePercentRestriction=false")
-                            .post(body)
-                            .addHeader("cache-control", "no-cache")
-                            .build();
-
-                    Response response = client.newCall(request).execute();
-
-                    //Log.d("REsponse is",response.body().string());
-
-                    summary= handleResponse(response.body().string());
-
-                } catch (Exception e) {
-                    Log.d("Exception in Response", "ERROR" + e.toString());
-                    summary=null;
-                }
-
-            }
-        }).start();
-
-        return summary;
-    }
-
-    public String handleResponse(String res){
-        Log.d("APKTAG","in HandleResponse");
-        try {
-
-            JSONObject jObject = new JSONObject(res);
-            JSONArray jsonArray = (JSONArray)jObject.get("items");
-
-            summary="";
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject j=jsonArray.getJSONObject(i);
-
-                summary += j.get("text").toString();
-                summary +="\n";
-
-            }
-
-            Log.d("APK1",summary);
-
-        } catch(Exception e){
-
-        }
-
-        return summary;
-
-    }
-
+//    public String sendResponse(final String text){
+//
+//        //Check if internet permission is there
+//        //TODO: Create Floating Action Button For Summarize
+//        //TODO: Change Log statements, tag to TAG
+//        //TODO: Store summary for title somewhere;
+//
+//        //Check if network is available
+//        if (!isNetworkAvailable()) {
+//            // write your toast message("Please check your internet connection")
+//            Toast.makeText(this,"Error connecting to the internet", Toast.LENGTH_SHORT);
+//            return null;
+//        }
+//
+//        new Thread(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                try {
+//
+//                    OkHttpClient client = new OkHttpClient();
+//
+//                    MediaType mediaType = MediaType.parse("application/octet-stream");
+//                    RequestBody body = RequestBody.create(mediaType, text);
+//                    Request request = new Request.Builder()
+//                            .url("http://api.intellexer.com/summarizeText?apikey="+APIKEY+"&returnedTopicsCount=1&structure=Autodetect&summaryRestriction="+numSentences+"&textStreamLength=1000&usePercentRestriction=false")
+//                            .post(body)
+//                            .addHeader("cache-control", "no-cache")
+//                            .build();
+//
+//                    Response response = client.newCall(request).execute();
+//
+//                    //Log.d("REsponse is",response.body().string());
+//
+//                    summary= handleResponse(response.body().string());
+//
+//                } catch (Exception e) {
+//                    Log.d("Exception in Response", "ERROR" + e.toString());
+//                    summary=null;
+//                }
+//
+//            }
+//        }).start();
+//
+//        return summary;
+//    }
+//
+//    public String handleResponse(String res){
+//        Log.d("APKTAG","in HandleResponse");
+//        try {
+//
+//            JSONObject jObject = new JSONObject(res);
+//            JSONArray jsonArray = (JSONArray)jObject.get("items");
+//
+//            summary="";
+//
+//            for (int i = 0; i < jsonArray.length(); i++) {
+//                JSONObject j=jsonArray.getJSONObject(i);
+//
+//                summary += j.get("text").toString();
+//                summary +="\n";
+//
+//            }
+//
+//            Log.d("APK1",summary);
+//
+//        } catch(Exception e){
+//
+//        }
+//
+//        return summary;
+//
+//    }
+//
 
     private void setTitleDialog(String reason) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -646,7 +645,7 @@ public class NewTextActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
-    void summaryDialog(String title, String content) {
+    void summaryDialog(String title, String content, Integer numSentences) {
         mStackLevel++;
 
         // DialogFragment.show() will take care of adding the fragment
@@ -659,9 +658,43 @@ public class NewTextActivity extends AppCompatActivity {
         }
         ft.addToBackStack(null);
 
+
         // Create and show the dialog.
-        DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,content);
+        DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,content,numSentences);
         newFragment.show(ft, "dialog");
     }
+
+    // Create a dialog box that disappears when the user correctly types in their password
+    private void startDialog(final String title, final String content) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Enter Number of Sentences to use in Summary");
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setRawInputType(Configuration.KEYBOARD_12KEY);
+        alert.setView(input);
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Put actions for OK button here
+                String numSentencesString=input.getText().toString();
+                int numSentences;
+                try {
+                    numSentences = Integer.parseInt(numSentencesString);
+                } catch (Exception e){
+                    //Set default value to 5
+                    numSentences = 5;
+                }
+                summaryDialog(title,content,numSentences);
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                //Put actions for CANCEL button here, or leave in blank
+            }
+        });
+        alert.show();
+
+
+    }
+
 
 }
