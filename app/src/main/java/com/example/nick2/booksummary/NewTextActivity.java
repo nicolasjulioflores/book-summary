@@ -41,6 +41,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +60,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -72,17 +74,9 @@ public class NewTextActivity extends AppCompatActivity {
 
     int mStackLevel=0;
 
-    //API key for the API
-    private static final String APIKEY="3e317094-1306-4472-8c1a-d69f395730d6";
-
-    private final int numSentences=5;
-
-    //The string after it is summarized
-    String summary="";
-    String stringToProcess="Obama was born in 1961 in Honolulu, Hawaii, two years after the territory was admitted to the Union as the 50th state. Raised largely in Hawaii, Obama also spent one year of his childhood in Washington State and four years in Indonesia. After graduating from Columbia University in 1983, he worked as a community organizer in Chicago. In 1988 Obama enrolled in Harvard Law School, where he was the first black president of the Harvard Law Review. After graduation, he became a civil rights attorney and professor, and taught constitutional law at the University of Chicago Law School from 1992 to 2004. Obama represented the 13th District for three terms in the Illinois Senate from 1997 to 2004, when he ran for the U.S. Senate. Obama received national attention in 2004, with his unexpected March primary win, his well-received July Democratic National Convention keynote address, and his landslide November election to the Senate. In 2008, Obama was nominated for president, a year after his campaign began, and after a close primary campaign against Hillary Clinton. He was elected over Republican John McCain, and was inaugurated on January 20, 2009. Nine months later, Obama was named the 2009 Nobel Peace Prize laureate.";
-
     // The layout elements in the activity
     private EditText TitleBox;
+
 
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -98,6 +92,14 @@ public class NewTextActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_text);
 
         thisActivity=this;
+
+        if (getResources().getString(R.string.NEW_TEXT_ACTION).equals(getIntent().getAction())) {
+            Log.d(TAG, "NEW Text Activity started");
+        } else {
+            Log.d(TAG, "EDIT Text Activity started");
+            setDefaults();
+        }
+
 
         FloatingActionButton startCamera = findViewById(R.id.startCamera);
         startCamera.setOnClickListener(new View.OnClickListener() {
@@ -154,21 +156,27 @@ public class NewTextActivity extends AppCompatActivity {
             EditText capturedStringBox = findViewById(R.id.capturedString);
             String capturedString = capturedStringBox.getText().toString();
 
+            //Make sure Title exists and is allowed
                 TitleBox = findViewById(R.id.title);
                 String title = TitleBox.getText().toString();
+                if (title.equals("")) {
+                    setTitleDialog("Missing Title");
+                } else if (titleInUse(title)) {
+                    setTitleDialog("Title already in use");
+                } else {
+                    //Attempts to summarize
+                    if (capturedString.equals("")){
+                        Toast.makeText(thisActivity,"No string to summarize",Toast.LENGTH_SHORT);
+                        Log.d("ApkTAG","No string to summarize");
+                    } else {
+                        //Opens a Dialog window which asks the number of sentences to use in summary
+                        //The Dialog window automatically calls summaryDialog(title,capturedString);
+                        startDialog(title,capturedString);
+                        //summaryDialog(title,capturedString);
+                    }
+                }
 
-            if (capturedString.equals("")){
-                Toast.makeText(thisActivity,"No string to summarize",Toast.LENGTH_SHORT);
-                Log.d("ApkTAG","No string to summarize");
-            } else {
 
-                //Opens a Dialog window which asks the number of sentences to use in summary
-                //The Dialog window automatically calls summaryDialog(title,capturedString);
-                startDialog(title,capturedString);
-
-
-                //summaryDialog(title,capturedString);
-            }
 
 
             }
@@ -176,80 +184,48 @@ public class NewTextActivity extends AppCompatActivity {
         });
     }
 
-//    public String sendResponse(final String text){
-//
-//        //Check if internet permission is there
-//        //TODO: Create Floating Action Button For Summarize
-//        //TODO: Change Log statements, tag to TAG
-//        //TODO: Store summary for title somewhere;
-//
-//        //Check if network is available
-//        if (!isNetworkAvailable()) {
-//            // write your toast message("Please check your internet connection")
-//            Toast.makeText(this,"Error connecting to the internet", Toast.LENGTH_SHORT);
-//            return null;
-//        }
-//
-//        new Thread(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                try {
-//
-//                    OkHttpClient client = new OkHttpClient();
-//
-//                    MediaType mediaType = MediaType.parse("application/octet-stream");
-//                    RequestBody body = RequestBody.create(mediaType, text);
-//                    Request request = new Request.Builder()
-//                            .url("http://api.intellexer.com/summarizeText?apikey="+APIKEY+"&returnedTopicsCount=1&structure=Autodetect&summaryRestriction="+numSentences+"&textStreamLength=1000&usePercentRestriction=false")
-//                            .post(body)
-//                            .addHeader("cache-control", "no-cache")
-//                            .build();
-//
-//                    Response response = client.newCall(request).execute();
-//
-//                    //Log.d("REsponse is",response.body().string());
-//
-//                    summary= handleResponse(response.body().string());
-//
-//                } catch (Exception e) {
-//                    Log.d("Exception in Response", "ERROR" + e.toString());
-//                    summary=null;
-//                }
-//
-//            }
-//        }).start();
-//
-//        return summary;
-//    }
-//
-//    public String handleResponse(String res){
-//        Log.d("APKTAG","in HandleResponse");
-//        try {
-//
-//            JSONObject jObject = new JSONObject(res);
-//            JSONArray jsonArray = (JSONArray)jObject.get("items");
-//
-//            summary="";
-//
-//            for (int i = 0; i < jsonArray.length(); i++) {
-//                JSONObject j=jsonArray.getJSONObject(i);
-//
-//                summary += j.get("text").toString();
-//                summary +="\n";
-//
-//            }
-//
-//            Log.d("APK1",summary);
-//
-//        } catch(Exception e){
-//
-//        }
-//
-//        return summary;
-//
-//    }
-//
+    private void setDefaults() {
+        Bundle extras = getIntent().getExtras();
+
+        String title = extras.getString(getResources().getString(R.string.TITLE));
+
+        EditText titleBox = findViewById(R.id.title);
+        titleBox.setText(title);
+
+        String textPath = extras.getString(getResources().getString(R.string.SAVED_STRING));
+
+        String text = readStringFromPath(textPath);
+
+        if (text == null) {
+            Log.e(TAG, "read null string from file");
+            return;
+        } else {
+            Log.d(TAG, "default text: " + text);
+        }
+
+        EditText textBox = findViewById(R.id.capturedString);
+        textBox.setText(text);
+
+    }
+
+    private String readStringFromPath(String path) {
+        File textFile = new File(path);
+        String text;
+        try {
+            byte[] bytes = new byte[(int)textFile.length()];
+            FileInputStream in = new FileInputStream(textFile);
+            in.read(bytes);
+            text = new String(bytes);
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            e.printStackTrace();
+            return null;
+        }
+
+        return text;
+    }
+
+
 
     private void setTitleDialog(String reason) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -314,6 +290,7 @@ public class NewTextActivity extends AppCompatActivity {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(textFile, true));
             writer.write(capturedStringBox.getText().toString());
+            writer.flush();
         } catch (IOException e) {
             Log.e(TAG, e.toString());
             e.printStackTrace();
@@ -357,6 +334,7 @@ public class NewTextActivity extends AppCompatActivity {
 
     private class ProcessImageFilesTask extends AsyncTask<Bitmap, String, String> {
         protected String doInBackground(Bitmap... image) {
+
 
             Context context = getApplicationContext();
 
@@ -428,13 +406,13 @@ public class NewTextActivity extends AppCompatActivity {
                 return;
             }
 
-            Log.d(TAG, capturedString.toString());
+            Log.d(TAG, capturedString);
 
             // If text was found then set it as the 'string'
             EditText capturedStringBox = findViewById(R.id.capturedString);
 
             String baseString = capturedStringBox.getText().toString();
-            baseString += capturedString;
+            baseString += "\n"+capturedString+"\n";
             capturedStringBox.setText(baseString);
             capturedStringBox.setBackground(getDrawable(R.drawable.my_rounded_text_border));
             switchSaveButton();
@@ -483,10 +461,7 @@ public class NewTextActivity extends AppCompatActivity {
 
         }
 
-        File stringStorage = new File(storageDir, imageFileName + ".txt");
-
-
-        return stringStorage;
+        return new File(storageDir, imageFileName + ".txt");
     }
 
 
@@ -631,11 +606,17 @@ public class NewTextActivity extends AppCompatActivity {
         }
     }
 
+    //Switches Both save button and summarize button
     private void switchSaveButton() {
         EditText capturedStringBox = findViewById(R.id.capturedString);
+
         FloatingActionButton saveButton = findViewById(R.id.saveButton);
         if (capturedStringBox.getText().toString().equals("")) saveButton.hide();
         else saveButton.show();
+
+        FloatingActionButton summarizeButton = findViewById(R.id.summarizeButton);
+        if (capturedStringBox.getText().toString().equals("")) summarizeButton.hide();
+        else summarizeButton.show();
     }
 
     private boolean isNetworkAvailable() {

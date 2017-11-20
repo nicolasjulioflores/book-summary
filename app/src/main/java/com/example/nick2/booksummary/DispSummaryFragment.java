@@ -126,10 +126,6 @@ public class DispSummaryFragment extends DialogFragment {
 
                     Response response = client.newCall(request).execute();
 
-                    //Log.d("REsponse is",response.body().string());
-
-
-
                     summary= handleResponse(response.body().string());
 
                 } catch (Exception e) {
@@ -186,7 +182,10 @@ public class DispSummaryFragment extends DialogFragment {
 
                 summaryGenerated=true;
 
-                //stuff that updates ui
+                //stuff that updates
+                TextView titlebox=thisView.findViewById(R.id.titleView);
+                titlebox.setVisibility(View.VISIBLE);
+                titlebox.setText("Summary for: "+title);
                 textBox.setText(summary);
                 ProgressBar pBar=thisView.findViewById(R.id.progressBar);
                 pBar.setVisibility(View.INVISIBLE);
@@ -238,7 +237,6 @@ public class DispSummaryFragment extends DialogFragment {
     private void saveSummary(String title,String content) {
         SharedPreferences preferences = getActivity().getBaseContext().getSharedPreferences(
                 getString(R.string.string_data_preference_key), Context.MODE_PRIVATE);
-
 
         // Store the string in a file
         File textFile;
