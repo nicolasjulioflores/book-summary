@@ -23,8 +23,12 @@ import android.view.ViewManager;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,16 +60,18 @@ public class MainActivity extends AppCompatActivity
 
         screen = getResources().getString(R.string.HOME);
 
+        //key to read data from file
         key=getString(R.string.string_data_preference_key);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addNewText);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Clear tutorial background
-                //Set background image
-                ScrollView svv= findViewById(R.id.svv);
-                svv.setBackgroundColor(Color.WHITE);
+//                //Clear tutorial background
+//
+//                //Set background image
+//                ScrollView svv= findViewById(R.id.svv);
+//                svv.setBackgroundColor(Color.WHITE);
 
                 // Start the text recognition activity
                 Intent intent = new Intent(getBaseContext(), NewTextActivity.class);
@@ -86,21 +92,12 @@ public class MainActivity extends AppCompatActivity
         //Set background image
         ScrollView svv= findViewById(R.id.svv);
 
+        //Set background image if first time opening
         if (firstopen) {
             firstopen=false;
             svv.setBackground(getDrawable(R.drawable.homebackground));
         }
 
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override
@@ -178,7 +175,8 @@ public class MainActivity extends AppCompatActivity
             LLMenu.removeAllViews();
 
             TextView about=new TextView(getBaseContext());
-            about.setText(R.string.ABOUT);
+            fillWithString(about);
+
             LLMenu.addView(about);
 
         }
@@ -187,6 +185,56 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    //Fills a textview with String
+    private void fillWithString(TextView about){
+
+        StringBuilder text = new StringBuilder();
+        BufferedReader reader = null;
+
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(getAssets().open("about.txt")));
+
+            // do reading, usually loop until end of file reading
+            String mLine;
+            while ((mLine = reader.readLine()) != null) {
+                if (mLine.equals("bbb")){
+                    text.append("<b>");
+                }else  if (mLine.equals("bbbb")){
+                    text.append("</b>");
+                } else {
+                    text.append(mLine);
+                }
+                text.append('\n');
+            }
+        } catch (IOException e) {
+            Log.d("About",e.toString());
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    //log the exception
+                    Log.d("About", e.toString());
+                }
+            }
+        }
+
+        about.setText((CharSequence) text);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
 
     private void displayHome() {
         //Set background image
@@ -276,7 +324,6 @@ public class MainActivity extends AppCompatActivity
 
             childLayout.addView(newCard);
         }
-//        LinearLayout LLMenu = findViewById(R.id.LinearLayoutMain);
         LinearLayout LLMenu = findViewById(R.id.lly);
         LLMenu.removeAllViews();
 
@@ -362,7 +409,6 @@ public class MainActivity extends AppCompatActivity
 
             childLayout.addView(newCard);
         }
-//        LinearLayout LLMenu = findViewById(R.id.LinearLayoutMain);
         LinearLayout LLMenu = findViewById(R.id.lly);
 
         LLMenu.removeAllViews();
