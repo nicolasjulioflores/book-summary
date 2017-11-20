@@ -99,9 +99,11 @@ public class NavigatingActivity extends AppCompatActivity
 
         //For now, just refresh the view
         if(navigationView.getMenu().findItem(R.id.nav_texts).isChecked()){
+            setTitle("Saved Texts");
             displayTexts();
         }
         if(navigationView.getMenu().findItem(R.id.nav_summary).isChecked()){
+            setTitle("Saved Summaries");
             displaySummaries();
         }
     }
@@ -113,18 +115,11 @@ public class NavigatingActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_scan) {
-            Snackbar.make(findViewById(R.id.lly), "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-
-        } else if (id == R.id.nav_summary) {
+        if (id == R.id.nav_summary) {
             displaySummaries();
         } else if (id == R.id.nav_texts) {
             displayTexts();
 
-        } else if (id == R.id.nav_share) {
-            Snackbar.make(findViewById(R.id.lly), "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -285,6 +280,7 @@ public class NavigatingActivity extends AppCompatActivity
         LinearLayout LLMenu = findViewById(R.id.lly);
 
         LLMenu.removeAllViews();
+
         LLMenu.addView(childLayout);
     }
 

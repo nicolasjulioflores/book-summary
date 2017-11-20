@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getBaseContext(), NavigatingActivity.class);
         startActivity(intent);
 
+
+
         FloatingActionButton addNewText = (FloatingActionButton) findViewById(R.id.addNewText);
         addNewText.setOnClickListener(new View.OnClickListener() {
             @Override
