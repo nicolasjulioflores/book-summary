@@ -123,6 +123,8 @@ public class MainActivity extends AppCompatActivity
                 View parentLayout = findViewById(R.id.lly);
                 mDeleteSnackbar = Snackbar.make(parentLayout, R.string.delete_snackbar,
                         Snackbar.LENGTH_INDEFINITE);
+                setSnackbarStyle(mDeleteSnackbar);
+
                 mDeleteSnackbar.show();
             } else if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) {
                 deleteSelectedViews(key);
@@ -225,7 +227,7 @@ public class MainActivity extends AppCompatActivity
             CardView newCard = new CardView(this);
 
             newCard.setCardElevation(4);
-            newCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            newCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryTinted1));
             int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
             newCard.setContentPadding(padding, padding, padding, padding);
 
@@ -310,7 +312,7 @@ public class MainActivity extends AppCompatActivity
             CardView newCard = new CardView(this);
 
             newCard.setCardElevation(4);
-            newCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            newCard.setCardBackgroundColor(getResources().getColor(R.color.colorPrimaryTinted1));
             int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
             newCard.setContentPadding(padding, padding, padding, padding);
 
@@ -429,6 +431,12 @@ public class MainActivity extends AppCompatActivity
             }
 
         }
+
+    }
+
+    private void setSnackbarStyle(Snackbar snackbar) {
+        View deleteSnackbarView = snackbar.getView();
+        deleteSnackbarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryShaded1));
 
     }
 

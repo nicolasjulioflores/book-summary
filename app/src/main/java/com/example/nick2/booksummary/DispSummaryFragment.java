@@ -148,11 +148,18 @@ public class DispSummaryFragment extends DialogFragment {
         saveButton.setVisibility(View.INVISIBLE);
         saveButton.setClickable(false);
         saveButtonContainer.setVisibility(View.INVISIBLE);
-        Snackbar.make(thisView, "Saved!",
-                Snackbar.LENGTH_SHORT)
-                .show();
+        Snackbar saveSnack = Snackbar.make(thisView, "Saved!",
+                Snackbar.LENGTH_SHORT);
+
+        setSnackbarStyle(saveSnack);
+        saveSnack.show();
     }
 
+    private void setSnackbarStyle(Snackbar snackbar) {
+        View deleteSnackbarView = snackbar.getView();
+        deleteSnackbarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryShaded1));
+
+    }
 
     private File createStringStorageFile() throws IOException {
         // Create an image file name

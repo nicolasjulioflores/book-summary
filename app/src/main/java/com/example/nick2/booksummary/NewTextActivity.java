@@ -207,6 +207,7 @@ public class NewTextActivity extends AppCompatActivity {
 
         summarySnackBar=Snackbar.make(findViewById(android.R.id.content), "Sending Request to Server",
                 Snackbar.LENGTH_INDEFINITE);
+        setSnackbarStyle(summarySnackBar);
         summarySnackBar.show();
 
         new Thread(new Runnable() {
@@ -233,6 +234,7 @@ public class NewTextActivity extends AppCompatActivity {
                     Log.d("Exception in Response", "ERROR" + e.toString());
                     summarySnackBar=Snackbar.make(findViewById(android.R.id.content), e.toString(),
                             Snackbar.LENGTH_SHORT);
+                    setSnackbarStyle(summarySnackBar);
                     summarySnackBar.show();
                     summary=null;
                 }
@@ -541,6 +543,7 @@ public class NewTextActivity extends AppCompatActivity {
         protected void onProgressUpdate(String... progress) {
             View parentLayout = findViewById(android.R.id.content);
             Snackbar progressSnack = Snackbar.make(parentLayout, progress[0], Snackbar.LENGTH_LONG);
+            setSnackbarStyle(progressSnack);
             progressSnack.show();
 
         }
@@ -912,6 +915,7 @@ public class NewTextActivity extends AppCompatActivity {
                 if (capturedString.equals("")){
                     View parentLayout = findViewById(android.R.id.content);
                     Snackbar noStringSnack = Snackbar.make(parentLayout, "No string to summarize", Snackbar.LENGTH_SHORT);
+                    setSnackbarStyle(noStringSnack);
                     noStringSnack.show();
 
                     Log.d("TAG","No string to summarize");
@@ -929,7 +933,11 @@ public class NewTextActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setSnackbarStyle(Snackbar snackbar) {
+        View deleteSnackbarView = snackbar.getView();
+        deleteSnackbarView.setBackgroundColor(getResources().getColor(R.color.colorPrimaryShaded1));
 
+    }
 
     private String readStringFromPath(String path) {
         File textFile = new File(path);
