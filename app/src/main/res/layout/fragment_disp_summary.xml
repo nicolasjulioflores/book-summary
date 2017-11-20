@@ -19,8 +19,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        >
+        android:layout_marginTop="10dp">
 
         <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/svt"
@@ -33,26 +32,53 @@
             android:id="@+id/text"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:layout_marginBottom="60dp"
+            android:layout_marginTop="40dp"
 
             android:padding="16dp"
             android:scrollbars="vertical"
-            android:text="@string/hello_blank_fragment"
-             />
-
+            android:text="@string/hello_blank_fragment" />
         </ScrollView>
-
-        <Button
-            android:id="@+id/saveButton"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/saveButtonLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Save"
-            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/svt" />
+            app:layout_constraintTop_toBottomOf="@+id/text">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/saveButtonContainer"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:foregroundGravity="center"
+                android:visibility="invisible"
+                android:src="@color/complementColor" />
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@mipmap/ic_save_white_24dp"
+                android:foregroundGravity="center"
+                android:gravity="center_horizontal"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/saveButtonContainer"
+                app:layout_constraintEnd_toEndOf="@+id/saveButtonContainer"
+                app:layout_constraintStart_toStartOf="@+id/saveButtonContainer"
+                app:layout_constraintTop_toTopOf="@+id/saveButtonContainer" />
+
+        </android.support.constraint.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/titleView"

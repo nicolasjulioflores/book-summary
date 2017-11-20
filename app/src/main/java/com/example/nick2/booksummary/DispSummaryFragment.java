@@ -8,12 +8,14 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,23 +82,25 @@ public class DispSummaryFragment extends DialogFragment {
         if (!summaryGenerated) {
             summaryGenerated=true;
 
-            //stuff that updates
-            TextView titlebox=thisView.findViewById(R.id.titleView);
+            TextView titlebox = thisView.findViewById(R.id.titleView);
             titlebox.setVisibility(View.VISIBLE);
-            titlebox.setText("Summary for: "+ title);
-            TextView textBox=thisView.findViewById(R.id.text);
+            titlebox.setText("Summary for " + title);
+            TextView textBox = thisView.findViewById(R.id.text);
             textBox.setText(content);
 
-            Button saveButton=thisView.findViewById(R.id.saveButton);
+            Button saveButton = thisView.findViewById(R.id.saveButton);
             saveButton.setVisibility(View.VISIBLE);
-            saveButton.setOnClickListener(new View.OnClickListener() {
+
+            ImageView saveButtonContainer = thisView.findViewById(R.id.saveButtonContainer);
+            saveButtonContainer.setVisibility(View.VISIBLE);
+
+            saveButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-
-                    saveSummary(title,content);
-
+                    saveSummary(title, content);
                 }
             });
+
         }
     }
 
@@ -139,8 +143,11 @@ public class DispSummaryFragment extends DialogFragment {
                 .apply();
 
         //Hide save button if saving is successful
-        Button saveButton=thisView.findViewById(R.id.saveButton);
+        Button saveButton =thisView.findViewById(R.id.saveButton);
+        ImageView saveButtonContainer = thisView.findViewById(R.id.saveButtonContainer);
         saveButton.setVisibility(View.INVISIBLE);
+        saveButton.setClickable(false);
+        saveButtonContainer.setVisibility(View.INVISIBLE);
         Snackbar.make(thisView, "Saved!",
                 Snackbar.LENGTH_SHORT)
                 .show();
