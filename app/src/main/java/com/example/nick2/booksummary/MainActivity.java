@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        MenuItem deleteButton = findViewById(R.id.action_delete);
+//        deleteButton.tit
+
         FloatingActionButton addNewText = (FloatingActionButton) findViewById(R.id.addNewText);
         addNewText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,6 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        } else if (id == R.id.action_delete) {
+            Log.d(TAG, "Delete clicked");
             return true;
         }
 

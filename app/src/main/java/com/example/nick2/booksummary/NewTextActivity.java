@@ -433,7 +433,7 @@ public class NewTextActivity extends AppCompatActivity {
                 return;
             }
 
-            Log.d(TAG, capturedString.toString());
+            Log.d(TAG, capturedString);
 
             // If text was found then set it as the 'string'
             EditText capturedStringBox = findViewById(R.id.capturedString);
@@ -488,10 +488,8 @@ public class NewTextActivity extends AppCompatActivity {
 
         }
 
-        File stringStorage = new File(storageDir, imageFileName + ".txt");
 
-
-        return stringStorage;
+        return new File(storageDir, imageFileName + ".txt");
     }
 
 
