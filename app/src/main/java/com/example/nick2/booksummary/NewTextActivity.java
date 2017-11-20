@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +30,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -65,6 +67,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -181,7 +184,19 @@ public class NewTextActivity extends AppCompatActivity {
         final EditText input = new EditText(this);
         input.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.MATCH_PARENT));
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        ColorStateList colorStateList = ColorStateList.valueOf(getResources().getColor(R.color.complementColor));
+        ViewCompat.setBackgroundTintList(input, colorStateList);
+        try {
+            Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+            f.setAccessible(true);
+            f.set(input, R.drawable.colored_cursor);
+        } catch (Exception e) {
+            Log.e(TAG, "Couldn't set cursor to diff color");
+            e.printStackTrace();
+        }
+
         alertDialog.setView(input);
 
         alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -200,7 +215,18 @@ public class NewTextActivity extends AppCompatActivity {
             }
         });
 
-        alertDialog.show();
+        final AlertDialog dialog = alertDialog.create();
+
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.complementColor));
+            }
+        });
+
+
+
+        dialog.show();
 
 
     }
