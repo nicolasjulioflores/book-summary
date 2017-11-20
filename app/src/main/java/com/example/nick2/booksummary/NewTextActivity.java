@@ -4,6 +4,9 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -62,6 +65,8 @@ import javax.xml.datatype.Duration;
 public class NewTextActivity extends AppCompatActivity {
     private static final String TAG = "NewTextActivity";
 
+    int mStackLevel=0;
+
     //API key for the API
     private static final String APIKEY="3e317094-1306-4472-8c1a-d69f395730d6";
 
@@ -71,16 +76,23 @@ public class NewTextActivity extends AppCompatActivity {
     String summary="";
     String stringToProcess="Obama was born in 1961 in Honolulu, Hawaii, two years after the territory was admitted to the Union as the 50th state. Raised largely in Hawaii, Obama also spent one year of his childhood in Washington State and four years in Indonesia. After graduating from Columbia University in 1983, he worked as a community organizer in Chicago. In 1988 Obama enrolled in Harvard Law School, where he was the first black president of the Harvard Law Review. After graduation, he became a civil rights attorney and professor, and taught constitutional law at the University of Chicago Law School from 1992 to 2004. Obama represented the 13th District for three terms in the Illinois Senate from 1997 to 2004, when he ran for the U.S. Senate. Obama received national attention in 2004, with his unexpected March primary win, his well-received July Democratic National Convention keynote address, and his landslide November election to the Senate. In 2008, Obama was nominated for president, a year after his campaign began, and after a close primary campaign against Hillary Clinton. He was elected over Republican John McCain, and was inaugurated on January 20, 2009. Nine months later, Obama was named the 2009 Nobel Peace Prize laureate.";
 
+    // The layout elements in the activity
+    private EditText TitleBox;
+
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
     private static final int REQUEST_IMAGE_CAPTURE = 25;
 
     private String mCurrentImagePath;
 
+    private Activity thisActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_text);
+
+        thisActivity=this;
 
         FloatingActionButton startCamera = findViewById(R.id.startCamera);
         startCamera.setOnClickListener(new View.OnClickListener() {
@@ -115,7 +127,7 @@ public class NewTextActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Save Button hit");
 
-                EditText TitleBox = findViewById(R.id.title);
+                TitleBox = findViewById(R.id.title);
                 String title = TitleBox.getText().toString();
                 if (title.equals("")) {
                     setTitleDialog("Missing Title");
@@ -127,6 +139,41 @@ public class NewTextActivity extends AppCompatActivity {
                 }
 
             }
+        });
+
+        FloatingActionButton summarizeText = (FloatingActionButton) findViewById(R.id.summarizeButton);
+        summarizeText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            EditText capturedStringBox = findViewById(R.id.capturedString);
+            String capturedString = capturedStringBox.getText().toString();
+
+                TitleBox = findViewById(R.id.title);
+                String title = TitleBox.getText().toString();
+
+            if (capturedString.equals("")){
+                Toast.makeText(thisActivity,"No string to summarize",Toast.LENGTH_SHORT);
+                Log.d("ApkTAG","No string to summarize");
+            } else {
+                summaryDialog(title,capturedString);
+            }
+//                String currentSummary = sendResponse(capturedString);
+//                if (currentSummary.equals(null) || currentSummary.equals("")){
+//                    //If summary is not available
+//                    Toast.makeText(thisActivity,"Error summarizing",Toast.LENGTH_SHORT);
+//                    Log.d("ApkTAG","Error to summarize");
+//                } else {
+//                    //If summary is available, open a dialog
+//                    Log.d("ApkTAG","Starting dialog");
+//
+//
+//
+
+
+
+            }
+
         });
     }
 
@@ -141,6 +188,7 @@ public class NewTextActivity extends AppCompatActivity {
         if (!isNetworkAvailable()) {
             // write your toast message("Please check your internet connection")
             Toast.makeText(this,"Error connecting to the internet", Toast.LENGTH_SHORT);
+            return null;
         }
 
         new Thread(new Runnable() {
@@ -167,6 +215,7 @@ public class NewTextActivity extends AppCompatActivity {
 
                 } catch (Exception e) {
                     Log.d("Exception in Response", "ERROR" + e.toString());
+                    summary=null;
                 }
 
             }
@@ -595,6 +644,24 @@ public class NewTextActivity extends AppCompatActivity {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    void summaryDialog(String title, String content) {
+        mStackLevel++;
+
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = DispSummaryFragment.newInstance(mStackLevel,title,content);
+        newFragment.show(ft, "dialog");
     }
 
 }
