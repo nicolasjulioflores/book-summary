@@ -29,7 +29,7 @@
             android:layout_height="fill_parent"
             android:layout_marginTop="40dp"
             android:layout_marginBottom="60dp"
-            android:padding="@dimen/nav_header_vertical_spacing"
+            android:padding="16dp"
             android:scrollbars="vertical"
             android:text="@string/hello_blank_fragment"
              />
@@ -57,7 +57,7 @@
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="Title"
-            android:padding="@dimen/nav_header_vertical_spacing"
+            android:padding="16dp"
             android:textAppearance="@android:style/TextAppearance.Material.Headline"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/text"

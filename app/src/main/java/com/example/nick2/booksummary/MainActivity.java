@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity
     //Key to select either texts or summaries
     private String key;
 
+    private Boolean firstopen=true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +79,12 @@ public class MainActivity extends AppCompatActivity
 
         //Set background image
         ScrollView svv= findViewById(R.id.svv);
-        svv.setBackground(getDrawable(R.drawable.homebackground));
+
+        if (firstopen) {
+
+            firstopen=false;
+            svv.setBackground(getDrawable(R.drawable.homebackground));
+        }
 
     }
 
@@ -159,15 +166,18 @@ public class MainActivity extends AppCompatActivity
 
             displayTexts();
             key=getString(R.string.string_data_preference_key);
-        } else if (id == R.id.nav_home) {
+        } else if (id == R.id.nav_about) {
             //Set background image
             ScrollView svv= findViewById(R.id.svv);
             svv.setBackgroundColor(Color.WHITE);
-            setTitle("BookSummary");
+            setTitle("About");
 
             //Clear views
             LinearLayout LLMenu = findViewById(R.id.lly);
             LLMenu.removeAllViews();
+
+
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

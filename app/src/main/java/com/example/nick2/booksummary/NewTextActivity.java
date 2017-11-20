@@ -928,7 +928,7 @@ public class NewTextActivity extends AppCompatActivity {
 
                     noStringSnack.show();
 
-                    Log.d("ApkTAG","No string to summarize");
+                    Log.d("TAG","No string to summarize");
                 } else {
                     //Opens a Dialog window which asks the number of sentences to use in summary
                     //The Dialog window automatically calls summaryDialog(title,capturedString);
