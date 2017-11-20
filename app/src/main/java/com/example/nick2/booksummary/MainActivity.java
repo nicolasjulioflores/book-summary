@@ -434,7 +434,7 @@ public class MainActivity extends AppCompatActivity
             clickedCard.setBackgroundColor(getResources().getColor(R.color.complementColor));
         } else {
             clickedCard.setTag(getResources().getString(R.string.NOT_CLICKED));
-            clickedCard.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            clickedCard.setBackgroundColor(getResources().getColor(R.color.colorPrimaryTinted1));
         }
 
     }
