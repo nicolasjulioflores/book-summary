@@ -18,6 +18,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -54,6 +55,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
+import com.soundcloud.android.crop.Crop;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -69,6 +71,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -94,6 +97,7 @@ public class NewTextActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE = 25;
 
     private String mCurrentImagePath;
+    private String mCurrentCroppedImagePath;
 
     private String summary;
     private String title;
@@ -200,6 +204,8 @@ public class NewTextActivity extends AppCompatActivity {
         });
         alert.show();
 
+    private void setTitleDialog(String reason) {
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
 
     }
 
@@ -366,10 +372,21 @@ public class NewTextActivity extends AppCompatActivity {
                 EditText TitleBox = findViewById(R.id.title);
                 String newTitle = input.getText().toString();
 
+                while (true) {
+                    boolean titleUsed = titleInUse(newTitle);
+                    if (!titleUsed && !newTitle.equals("")) break;
 
                 //TODO: If title in use -> show a toast
                 if (titleInUse(newTitle)) {
 
+                    View parentLayout = findViewById(android.R.id.content);
+                    if (titleUsed) {
+                        dialog.dismiss();
+                        setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
+                    } else {
+                        dialog.dismiss();
+                        setTitleDialog(getResources().getString(R.string.NO_TITLE));
+                    }
                 }
                 if (newTitle.equals("")){
 
@@ -471,6 +488,7 @@ public class NewTextActivity extends AppCompatActivity {
 
         // Delete the file used
         new File(mCurrentImagePath).delete(); // then delete it
+        new File(mCurrentCroppedImagePath).delete(); // delete that one too
 
     }
 
@@ -538,7 +556,8 @@ public class NewTextActivity extends AppCompatActivity {
 
         protected void onProgressUpdate(String... progress) {
             View parentLayout = findViewById(android.R.id.content);
-            Snackbar.make(parentLayout, progress[0], Snackbar.LENGTH_LONG).show();
+            Snackbar progressSnack = Snackbar.make(parentLayout, progress[0], Snackbar.LENGTH_LONG);
+            progressSnack.show();
 
         }
 
@@ -645,13 +664,50 @@ public class NewTextActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Log.d(TAG, "Received image");
                 Bundle extras = intent.getExtras();
-                processImage(BitmapFactory.decodeFile(mCurrentImagePath)); // process the image
+                // crop the image
+                beginCrop(Uri.fromFile(new File(mCurrentImagePath)));
 
             } else {
                 Log.d(TAG, "Error in image capture, result code:" + Integer.toString(resultCode));
             }
+        } else if (requestCode == Crop.REQUEST_CROP) {
+            handleCrop(resultCode, intent);
         }
 
+    }
+
+    private void beginCrop(Uri source) {
+        File outputFile;
+        try {
+            outputFile = createImageFile();
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            e.printStackTrace();
+            return;
+        }
+        mCurrentCroppedImagePath = outputFile.getAbsolutePath();
+        Uri destination = Uri.fromFile(outputFile);
+        Crop.of(source, destination).withAspect(9,11).start(this);
+    }
+
+    private void handleCrop(int resultCode, Intent result) {
+        if (resultCode == RESULT_OK) {
+            Uri imageUri = Crop.getOutput(result);
+
+            Bitmap bitmap;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+            } catch (IOException e) {
+                Log.e(TAG, "Error converting image");
+                e.printStackTrace();
+                return;
+            }
+            processImage(bitmap);
+
+        } else if (resultCode == Crop.RESULT_ERROR) {
+            View parentLayout = findViewById(android.R.id.content);
+            Snackbar.make(parentLayout, Crop.getError(result).getMessage(), Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -685,6 +741,7 @@ public class NewTextActivity extends AppCompatActivity {
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, listener)
                 .show();
+
     }
 
     /**
@@ -781,8 +838,10 @@ public class NewTextActivity extends AppCompatActivity {
             String title = TitleBox.getText().toString();
             if (title.equals("")) {
                 setTitleDialog("Missing Title",true);
+                setTitleDialog(getResources().getString(R.string.NO_TITLE));
             } else if (titleInUse(title)) {
                 setTitleDialog("Title already in use",true);
+                setTitleDialog(getResources().getString(R.string.TITLE_IN_USE));
             } else {
                 // Save the data in prefs
                 saveDataAndQuit(title);
@@ -803,8 +862,9 @@ public class NewTextActivity extends AppCompatActivity {
                 //Attempts to summarize
                 if (capturedString.equals("")){
                     View parentLayout = findViewById(android.R.id.content);
-                    Snackbar.make(parentLayout, "No string to summarize", Snackbar.LENGTH_SHORT)
-                            .show();
+                    Snackbar noStringSnack = Snackbar.make(parentLayout, "No string to summarize", Snackbar.LENGTH_SHORT);
+
+                    noStringSnack.show();
 
                     Log.d("ApkTAG","No string to summarize");
                 } else {
@@ -819,6 +879,16 @@ public class NewTextActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        File imageFile = new File(mCurrentImagePath);
+        File cropImageFile = new File(mCurrentCroppedImagePath);
+        if (imageFile.exists()) imageFile.delete();
+        if (cropImageFile.exists()) cropImageFile.delete();
+
     }
 
 

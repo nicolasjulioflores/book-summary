@@ -32,6 +32,7 @@ import java.util.Map;
 public class NavigatingActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String TAG = "NavigatingActivity";
     private Snackbar mDeleteSnackbar;
     private List<CardView> Deck;
     private NavigationView navigationView;
@@ -100,6 +101,8 @@ public class NavigatingActivity extends AppCompatActivity
                 View parentLayout = findViewById(R.id.lly);
                 mDeleteSnackbar = Snackbar.make(parentLayout, R.string.delete_snackbar,
                         Snackbar.LENGTH_INDEFINITE);
+                setSnackbarStyle(mDeleteSnackbar);
+
                 mDeleteSnackbar.show();
             } else if (mDeleteSnackbar != null && mDeleteSnackbar.isShown()) {
                 deleteSelectedViews(key);
@@ -162,7 +165,7 @@ public class NavigatingActivity extends AppCompatActivity
         childLayout.setLayoutParams(linearParams);
         childLayout.setOrientation(LinearLayout.VERTICAL);
         for (final String title: userData.keySet()) {
-            Log.d("APKTAG", "Title for doc: " + title);
+            Log.d(TAG, "Title for doc: " + title);
 
             // Set the layout for the new CardViews to be added
             CardView newCard = new CardView(this);
@@ -221,6 +224,14 @@ public class NavigatingActivity extends AppCompatActivity
         LLMenu.removeAllViews();
 
         LLMenu.addView(childLayout);
+    }
+
+    private void setSnackbarStyle(Snackbar snackbar) {
+        View deleteSnackbarView = snackbar.getView();
+        deleteSnackbarView.setBackgroundColor(getResources().getColor(R.color.lighterAnalogousColor));
+
+        //TextView textView = deleteSnackbarView.findViewById(android.support.design.R.id.snackbar_text);
+        //textView.setTextColor(Color.WHITE);
     }
 
     //Gathers stored texts from the file and displays it in the window
@@ -326,6 +337,7 @@ public class NavigatingActivity extends AppCompatActivity
     }
 
     private void deleteSelectedViews(String key) {
+        if (Deck == null) return;
         for (Iterator<CardView> iterator = Deck.iterator(); iterator.hasNext();) {
             CardView card = iterator.next();
             if (card.getTag() != null && getResources().getString(R.string.CLICKED).equals(card.getTag())) {
